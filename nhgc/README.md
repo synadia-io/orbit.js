@@ -1,21 +1,23 @@
-# nhg.js
+# nhgc
 
-This is a prototype API in TypeScript for interacting with KV over the NATS HTTP
-Gateway. The NATS HTTP Gateway is a Synadia Server that allows clients to
-communicate with NATS KV via HTTP protocol. The NATS HTTP Gateway is part of the
-[Synadia Cloud](https://www.synadia.com/).
+NHGC is a prototype API in TypeScript that interacts with the NATS KV over the
+NATS HTTP Gateway. The NATS HTTP Gateway is a Synadia Server that allows clients
+to communicate with NATS KV via HTTP protocol. The NATS HTTP Gateway is part of
+the [Synadia Cloud](https://www.synadia.com/).
 
-While no library is needed except for standard libraries built into most
-programming languages a simple wrapper makes it very convenient.
+While no library is needed to interact with the gateway except for standard
+libraries built into most programming languages, a simple API wrapper makes it
+very easy for developers.
 
-The NGH client, is an ES module, and depends on `fetch` and `SSE`
-(`EventSource`) for `watch` operations.
+The NHG client is an ES module that depends on `fetch` and `EventSource` (SSE)
+for KV `watch` operations.
 
 ### Installing
 
-The library requires an ESM compatible runtime (like a browser). If you want to
-use outside of the browser it should be possible as long as your runtime allows
-using ESM module and provides any necessary shims (fetch, EventSource).
+The library requires an ESM-compatible runtime (like a browser). If you want to
+use outside of a browser, it should be possible so long as your runtime allows
+using ESM modules and providing the necessary support or shims (fetch,
+EventSource).
 
 The open-source package registry [JSR](https://jsr.io), hosts packages. See
 [nhgc](https://jsr.io/@synadiaorbit/nhgc).
@@ -43,9 +45,9 @@ const EventSource = NativeEventSource || EventSourcePolyfill;
 global.EventSource = NativeEventSource || EventSourcePolyfill;
 ```
 
-#### Using
+## Usage
 
-To use the gateway you will need the HTTP/S url of the NGH server and an API
+To use the gateway you will need the HTTP/S URL of the NHG server and an API
 token.
 
 ```typescript
@@ -54,7 +56,7 @@ import { newNHG } from "@synadiaorbit/nhgc";
 // create an instance of the API using the specified connection details
 const nhg = newNHG("https://someurl.com", "someapikey");
 
-// generate an unique KV name
+// generate a unique KV name
 const id = crypto.randomUUID();
 
 // add a new KV (you can access an existing one with `nhg.kvm.get(id);`)
@@ -129,8 +131,8 @@ console.log(
   `kv contains ${info.values} taking up ${info.size} bytes and holds a history of ${info.history}`,
 );
 
-// we can purge deleted keys (eliminating their history - they will still remain but
-// marked as purged, and their data lost)
+// we can purge deleted keys (eliminating their history,
+// and marked as purged, with any data lost)
 await kv.purge();
 
 const after = await kv.info();
