@@ -2,11 +2,15 @@ name: NATS.deno
 
 on:
   push:
+    paths:
+      - 'nhgc/**'
     tags:
       - '*'
     branches:
       - '*'
   pull_request:
+    paths:
+      - 'nhgc/**'
     branches: [main]
 
 jobs:
@@ -19,7 +23,7 @@ jobs:
         deno-version: [1.42.1]
 
     steps:
-      - name: Git Checkout Deno Module
+      - name: Git Checkout NHGC
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
@@ -28,17 +32,6 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ matrix.deno-version }}
-
-      - name: Set NATS Server Version
-        run: echo "NATS_VERSION=v2.10.12" >> $GITHUB_ENV
-
-
-      - name: Get nats-server
-        run: |
-          wget "https://github.com/nats-io/nats-server/releases/download/$NATS_VERSION/nats-server-$NATS_VERSION-linux-amd64.zip" -O tmp.zip
-          unzip tmp.zip
-          mv nats-server-$NATS_VERSION-linux-amd64 nats-server
-          rm nats-server/README.md LICENSE
 
       - name: Lint Deno Module
         run: deno fmt --check --ignore=docs/
