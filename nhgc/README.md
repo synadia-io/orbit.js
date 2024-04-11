@@ -2,8 +2,8 @@
 
 NHGC is a prototype API in TypeScript that interacts with the NATS KV over the
 NATS HTTP Gateway. The NATS HTTP Gateway is a Synadia Server that allows clients
-to communicate with NATS KV via the HTTP protocol. The NATS HTTP Gateway is part of
-the [Synadia Cloud](https://www.synadia.com/).
+to communicate with NATS KV via the HTTP protocol. The NATS HTTP Gateway is part
+of the [Synadia Cloud](https://www.synadia.com/).
 
 While no library is needed to interact with the gateway except for standard
 libraries built into most programming languages, a simple API wrapper makes it
@@ -16,8 +16,8 @@ for KV `watch` operations.
 
 The library requires an ESM-compatible runtime (like a browser). If you want to
 use outside of a browser, it should be possible so long as your runtime allows
-using ESM modules and providing the necessary support or shims (fetch,
-EventSource).
+using ESM modules and provides the necessary support for `fetch` and
+`EventSource`.
 
 The open-source package registry [JSR](https://jsr.io), hosts packages. See
 [nhgc](https://jsr.io/@synadiaorbit/nhgc).
@@ -47,7 +47,7 @@ global.EventSource = NativeEventSource || EventSourcePolyfill;
 
 ## Usage
 
-To use the gateway you will need the HTTP/S URL of the NHG server and an API
+To use the gateway you will need the HTTPS URL of the NHG server and an API
 token.
 
 ```typescript
