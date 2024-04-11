@@ -17,3 +17,7 @@ export function getConnectionDetails(): { url: string; apiKey: string } {
   const apiKey = Deno.env.get("NHG_APIKEY") ?? "XxX";
   return { url, apiKey };
 }
+
+export function randomKvName(): string {
+  return `TESTKV_${crypto.randomUUID()}`;
+}

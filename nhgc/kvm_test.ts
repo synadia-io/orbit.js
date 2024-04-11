@@ -18,11 +18,11 @@ import {
   assertEquals,
   assertRejects,
 } from "https://deno.land/std@0.207.0/assert/mod.ts";
-import { getConnectionDetails } from "./credentials.ts";
+import { getConnectionDetails, randomKvName } from "./credentials.ts";
 
 Deno.test("kvm - add", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
   const info = await nhg.kvm.info(id);
   await nhg.kvm.destroy(id);
@@ -31,7 +31,7 @@ Deno.test("kvm - add", async () => {
 
 Deno.test("kvm - add with config", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   await nhg.kvm.add(id, {
     description: "testing",
     max_value_size: 1024,
@@ -48,7 +48,7 @@ Deno.test("kvm - add with config", async () => {
 
 Deno.test("kvm - list", async () => {
   const kvm = newNHG(getConnectionDetails()).kvm;
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   await kvm.add(id, { max_bytes: 1024 * 512 });
   const buckets = await kvm.list();
   assertArrayIncludes(buckets, [id]);
@@ -57,7 +57,7 @@ Deno.test("kvm - list", async () => {
 
 Deno.test("kvm - info", async () => {
   const kvm = newNHG(getConnectionDetails()).kvm;
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   await assertRejects(
     () => {
       return kvm.info(id);

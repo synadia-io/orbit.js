@@ -12,16 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Kv,
-  KvBucketConfig,
-  KvBucketInfo,
-  Kvm,
-  KvWatchFn,
-  KvWatchOpts,
-  toKvChangeEvent,
-  Watcher,
-} from "./types.ts";
+import { Kv, KvBucketConfig, KvBucketInfo, Kvm } from "./types.ts";
 import { HttpImpl } from "./nhgc.ts";
 import { KvImpl } from "./kv.ts";
 
