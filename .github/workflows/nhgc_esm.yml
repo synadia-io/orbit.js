@@ -3,6 +3,8 @@ name: nhgc release
 on:
   release:
     types: [created]
+    tags:
+      - 'nhgc/*'
 
 jobs:
   test:
