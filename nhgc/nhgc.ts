@@ -54,4 +54,10 @@ export class HttpImpl implements Http {
     r.headers = headers;
     return fetch(u, r);
   }
+
+  handleError(r: Response): Promise<any> {
+    r.body?.cancel().catch(() => {});
+    const reason = r.headers.get("x-nats-api-gateway-error") || r.statusText;
+    return Promise.reject(new Error(`${r.status}: ${reason}`));
+  }
 }

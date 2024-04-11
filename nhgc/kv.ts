@@ -13,8 +13,20 @@
  * limitations under the License.
  */
 
-import { Kv, KvEntry, Operation, ReviverFn, Value } from "./types.ts";
+import {
+  Kv,
+  KvBucketInfo,
+  KvEntry,
+  KvWatchFn,
+  KvWatchOpts,
+  Operation,
+  ReviverFn,
+  toKvChangeEvent,
+  Value,
+  Watcher,
+} from "./types.ts";
 import { HttpImpl } from "./nhgc.ts";
+import { Deferred, deferred } from "./util.ts";
 
 type KvE = {
   bucket: string;
@@ -38,7 +50,10 @@ class KvEntryImpl implements KvEntry {
         });
         return Promise.resolve(null);
       } else {
-        return Promise.reject(new Error(`${r.status}: ${r.statusText}`));
+        r.body?.cancel().catch(() => {});
+        const reason = r.headers.get("x-nats-api-gateway-error") ||
+          r.statusText;
+        return Promise.reject(new Error(`${r.status}: ${reason}`));
       }
     }
     if (r.headers.get("Content-Type") === "application/json") {
@@ -149,8 +164,7 @@ export class KvImpl extends HttpImpl implements Kv {
     });
 
     if (!r.ok) {
-      r.body?.cancel().catch();
-      return Promise.reject(new Error(`${r.status}: ${r.statusText}`));
+      return this.handleError(r);
     }
 
     return r.json();
@@ -187,5 +201,123 @@ export class KvImpl extends HttpImpl implements Kv {
     );
     r.body?.cancel().catch(() => {});
     return r.ok;
+  }
+
+  async purge(): Promise<void> {
+    const r = await this.doFetch(
+      "DELETE",
+      `/v1/kvm/buckets/${this.bucket}/purge`,
+    );
+    r.body?.cancel().catch(() => {});
+    if (!r.ok) {
+      return this.handleError(r);
+    }
+    return Promise.resolve();
+  }
+
+  async keys(filter = ">"): Promise<string[]> {
+    const opts = [];
+    if (typeof filter === "string") {
+      opts.push(`filter=${encodeURIComponent(filter)}`);
+    }
+
+    const qs = opts.join("&");
+    const path = qs.length > 0
+      ? `/v1/kvm/buckets/${this.bucket}/keys?${qs}`
+      : `/v1/kvm/buckets/${this.bucket}/keys`;
+
+    const r = await this.doFetch("GET", path, undefined, {
+      headers: {
+        "Accept": "application/json",
+      },
+    });
+    if (!r.ok) {
+      return this.handleError(r);
+    }
+    return r.json();
+  }
+
+  watch(
+    opts: KvWatchOpts,
+  ): Promise<KvWatcher> {
+    const args: string[] = [];
+    args.push(`X-Nats-Api-Key=${this.apiKey}`);
+
+    const dopts = Object.assign({
+      filter: ">",
+      idleHeartbeat: 0,
+      include: "",
+      ignoreDeletes: false,
+      startSequence: 1,
+    }, opts) as KvWatchOpts;
+
+    if (dopts.filter) {
+      args.push(`filter=${encodeURIComponent(dopts.filter)}`);
+    }
+    if (dopts.idleHeartbeat && dopts.idleHeartbeat > 0) {
+      args.push(`idleHeartbeat=${dopts.idleHeartbeat}`);
+    }
+    if (dopts.include) {
+      args.push(`include=${dopts.include}`);
+    }
+    if (dopts.ignoreDeletes) {
+      args.push(`ignoreDeletes=true`);
+    }
+    if (dopts.resumeRevision && dopts.resumeRevision > 0) {
+      args.push(`resumeRevision=${dopts.resumeRevision}`);
+    }
+
+    const qs = args.join("&");
+    const path = qs.length > 0
+      ? `/v1/kvm/buckets/${this.bucket}/watch?${qs}`
+      : `/v1/kvm/buckets/${this.bucket}/watch`;
+
+    return Promise.resolve(
+      new KvWatcher(new EventSource(new URL(path, this.url)), opts.callback),
+    );
+  }
+
+  async info(): Promise<KvBucketInfo> {
+    const r = await this.doFetch(
+      "GET",
+      `/v1/kvm/buckets/${this.bucket}`,
+      undefined,
+      {
+        headers: {
+          "Accept": "application/json",
+        },
+      },
+    );
+    if (!r.ok) {
+      return this.handleError(r);
+    }
+    return r.json();
+  }
+}
+
+class KvWatcher implements Watcher {
+  fn: KvWatchFn;
+  es: EventSource;
+  stopped: Deferred<void>;
+  constructor(es: EventSource, fn: KvWatchFn) {
+    this.es = es;
+    this.fn = fn;
+    this.stopped = deferred();
+
+    es.addEventListener("update", (e: MessageEvent) => {
+      this.fn(undefined, toKvChangeEvent(e));
+    });
+
+    es.addEventListener("closed", () => {
+      this.fn(new Error("watcher closed"), undefined);
+      this.stopped.resolve();
+    });
+  }
+  stop(): Promise<void> {
+    if (this.es.readyState === this.es.CLOSED) {
+      this.stopped.resolve();
+    }
+    this.es.close();
+    return this.stopped;
   }
 }

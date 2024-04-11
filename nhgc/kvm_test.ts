@@ -13,14 +13,11 @@
  * limitations under the License.
  */
 import { newNHG } from "./mod.ts";
-import { deferred } from "https://deno.land/std@0.166.0/async/deferred.ts";
 import {
   assertArrayIncludes,
   assertEquals,
   assertRejects,
-  fail,
 } from "https://deno.land/std@0.207.0/assert/mod.ts";
-import { KvEntryInfo } from "./types.ts";
 import { getConnectionDetails } from "./credentials.ts";
 
 Deno.test("kvm - add", async () => {
@@ -73,57 +70,4 @@ Deno.test("kvm - info", async () => {
   const info = await kvm.info(id);
   assertEquals(info.name, id);
   await kvm.destroy(id);
-});
-
-Deno.test("kvm - keys", async () => {
-  const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
-  const kv = await nhg.kvm.add(id, { max_bytes: 512 * 1024 });
-
-  await Promise.all([
-    kv.put("A", "hello"),
-    kv.put("B", "world"),
-  ]);
-
-  const keys = await nhg.kvm.keys(id);
-  assertEquals(keys.length, 2);
-  assertArrayIncludes(keys, ["A", "B"]);
-  await nhg.kvm.destroy(id);
-});
-
-Deno.test("kvm - watch", async () => {
-  const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
-  const kv = await nhg.kvm.add(id, { max_bytes: 512 * 1024 });
-
-  await Promise.all([
-    kv.put("a", "a"),
-    kv.put("b", "b"),
-    kv.put("c", "c"),
-  ]);
-
-  const d = deferred();
-
-  const events: KvEntryInfo[] = [];
-  const w = await nhg.kvm.watch(id, {
-    ignoreDeletes: false,
-    include: "allHistory",
-    callback: (err, e) => {
-      if (err) {
-        fail(err.message);
-      }
-      if (e) {
-        events.push(e);
-        if (events.length === 4) {
-          d.resolve();
-        }
-      }
-    },
-  });
-
-  await kv.put("d", "d");
-  await d;
-  w.stop();
-  assertEquals(events.length, 4);
-  await nhg.kvm.destroy(id);
 });

@@ -16,8 +16,22 @@ export type Value = string | Uint8Array | ReadableStream<Uint8Array>;
 
 export type Operation = "PUT" | "DEL" | "PURGE";
 
-export function toKvEntryInfo(m: MessageEvent): KvEntryInfo {
-  return JSON.parse(m.data) as KvEntryInfo;
+export function toKvChangeEvent(m: MessageEvent): KvChangeEvent {
+  return JSON.parse(m.data, function (this: any, key: string, value: any): any {
+    if (key === "created" && value !== "") {
+      return new Date(Date.parse(value));
+    }
+    return value;
+  }) as KvChangeEvent;
+}
+
+export interface KvChangeEvent {
+  key: string;
+  bucket: string;
+  created: Date;
+  revision: number;
+  delta: number;
+  operation: Operation;
 }
 
 export interface KvEntryInfo {
@@ -45,6 +59,11 @@ export interface Kv {
     previousRevision?: number,
   ): Promise<number>;
   delete(key: string, purge?: boolean): Promise<boolean>;
+
+  purge(): Promise<void>;
+  keys(filter?: string): Promise<string[]>;
+  watch(opts: KvWatchOpts): Promise<Watcher>;
+  info(): Promise<KvBucketInfo>;
 }
 
 export type KvBucketInfo = {
@@ -71,10 +90,11 @@ export type KvBucketConfig = {
 
 export type Include = "allHistory" | "updatesOnly" | "lastValue" | "";
 
-export type KvWatchFn = (err?: Error, e?: KvEntryInfo) => void;
+export type KvWatchFn = (err?: Error, e?: KvChangeEvent) => void;
 
 export interface Watcher {
   stop(): void;
+  stopped: Promise<void>;
 }
 
 export type KvWatchOpts = WatchOpts & {
@@ -88,17 +108,14 @@ export type HeartbeatOpts = {
 };
 
 export type WatchOpts = HeartbeatOpts & {
-  include: Include;
-  ignoreDeletes: boolean;
+  include?: Include;
+  ignoreDeletes?: boolean;
 };
 
 export interface Kvm {
   get(bucket: string): Kv;
   add(bucket: string, config?: Partial<KvBucketConfig>): Promise<Kv>;
   destroy(bucket: string): Promise<void>;
-  purge(bucket: string): Promise<void>;
   list(): Promise<string[]>;
   info(bucket: string): Promise<KvBucketInfo>;
-  keys(bucket: string, filter?: string): Promise<string[]>;
-  watch(bucket: string, opts: KvWatchOpts): Promise<Watcher>;
 }
