@@ -8,6 +8,7 @@ on:
 
 jobs:
   test:
+    environment: CI
     strategy:
       matrix:
         deno-version: [1.41.3]
@@ -28,7 +29,9 @@ jobs:
           deno-version: ${{ matrix.deno-version }}
       - name: Build
         run: deno bundle nhgc/mod.ts nhgc/mod.mjs
-      - name: Archive
-        uses: actions/upload-artifact@v4
+
+      - name: Upload assets to a Release
+        uses: AButler/upload-release-assets@v3.0
         with:
-          path: nhgc/mod.mjs
+          files: nhgc/mod.mjs
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
