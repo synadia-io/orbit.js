@@ -1,9 +1,9 @@
 # nhg.js
 
-This is a prototype API in TypeScript for interacting with KV
-over the NATS HTTP Gateway. The NATS HTTP Gateway is a Synadia
-Server that allows clients to communicate with NATS KV via HTTP protocol.
-The NATS HTTP Gateway is part of the [Synadia Cloud](https://www.synadia.com/).
+This is a prototype API in TypeScript for interacting with KV over the NATS HTTP
+Gateway. The NATS HTTP Gateway is a Synadia Server that allows clients to
+communicate with NATS KV via HTTP protocol. The NATS HTTP Gateway is part of the
+[Synadia Cloud](https://www.synadia.com/).
 
 While no library is needed except for standard libraries built into most
 programming languages a simple wrapper makes it very convenient.

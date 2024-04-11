@@ -86,9 +86,7 @@ export interface Kv {
    */
   delete(key: string, purge?: boolean): Promise<boolean>;
 
-  /**
-   *
-   */
+  /** */
   purge(): Promise<void>;
   keys(filter?: string): Promise<string[]>;
   watch(opts: KvWatchOpts): Promise<Watcher>;
