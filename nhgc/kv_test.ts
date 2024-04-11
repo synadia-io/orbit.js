@@ -26,6 +26,13 @@ import { deferred } from "https://deno.land/std@0.166.0/async/deferred.ts";
 import { KvChangeEvent, KvEntryInfo } from "./types.ts";
 import { keys } from "https://underscorejs.org/underscore-esm.js";
 
+Deno.test("kv - cleanup test buckets", async () => {
+  const nhg = newNHG(getConnectionDetails());
+  const kvs = await nhg.kvm.list();
+  for (const n of kvs) {
+    await nhg.kvm.destroy(n);
+  }
+});
 Deno.test("kv - get simple value", async () => {
   const nhg = newNHG(getConnectionDetails());
   const id = crypto.randomUUID();
