@@ -18,11 +18,11 @@ export interface Deferred<T> extends Promise<T> {
    * @param value
    */
   resolve: (value?: T | PromiseLike<T>) => void;
-  //@ts-ignore: tsc guard
   /**
    * Rejects the Deferred
    * @param reason
    */
+  // deno-lint-ignore no-explicit-any
   reject: (reason?: any) => void;
 }
 

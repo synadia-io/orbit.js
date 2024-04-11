@@ -17,6 +17,7 @@ export type Value = string | Uint8Array | ReadableStream<Uint8Array>;
 export type Operation = "PUT" | "DEL" | "PURGE";
 
 export function toKvChangeEvent(m: MessageEvent): KvChangeEvent {
+  // deno-lint-ignore no-explicit-any
   return JSON.parse(m.data, function (this: any, key: string, value: any): any {
     if (key === "created" && value !== "") {
       return new Date(Date.parse(value));

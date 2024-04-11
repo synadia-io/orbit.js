@@ -55,6 +55,7 @@ export class HttpImpl implements Http {
     return fetch(u, r);
   }
 
+  // deno-lint-ignore no-explicit-any
   handleError(r: Response): Promise<any> {
     r.body?.cancel().catch(() => {});
     const reason = r.headers.get("x-nats-api-gateway-error") || r.statusText;

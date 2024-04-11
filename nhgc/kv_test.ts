@@ -21,14 +21,22 @@ import {
   fail,
 } from "https://deno.land/std@0.207.0/assert/mod.ts";
 import { newNHG } from "./mod.ts";
-import { getConnectionDetails } from "./credentials.ts";
+import { getConnectionDetails, randomKvName } from "./credentials.ts";
 import { deferred } from "https://deno.land/std@0.166.0/async/deferred.ts";
-import { KvChangeEvent, KvEntryInfo } from "./types.ts";
-import { keys } from "https://underscorejs.org/underscore-esm.js";
+import { KvChangeEvent } from "./types.ts";
 
+Deno.test("kv - cleanup test buckets", async () => {
+  const nhg = newNHG(getConnectionDetails());
+  const kvs = await nhg.kvm.list();
+  for (const n of kvs) {
+    if (n.startsWith("TESTKV_")) {
+      await nhg.kvm.destroy(n);
+    }
+  }
+});
 Deno.test("kv - get simple value", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
   const a = await kv.put("a", "hello world");
   assert(typeof a === "number" && a > 0);
@@ -44,7 +52,7 @@ Deno.test("kv - get simple value", async () => {
 
 Deno.test("kv - binary", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
 
   const d = new Uint8Array(10);
@@ -65,14 +73,14 @@ Deno.test("kv - binary", async () => {
 
 Deno.test("kv - get entry from non existing kv", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = nhg.kvm.get(id);
   assertEquals(await kv.get("xxxx"), null);
 });
 
 Deno.test("kv - get non existing entry", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
   assertEquals(await kv.get("xxefjejere"), null);
   await nhg.kvm.destroy(id);
@@ -80,7 +88,7 @@ Deno.test("kv - get non existing entry", async () => {
 
 Deno.test("kv - delete", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
 
   const seq = await kv.put("c", "one");
@@ -94,7 +102,7 @@ Deno.test("kv - delete", async () => {
 
 Deno.test("kv - get revision", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
   const seq = await kv.put("s", "one");
   assert(seq > 0);
@@ -106,7 +114,7 @@ Deno.test("kv - get revision", async () => {
 
 Deno.test("kv - create fails existing key", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
 
   const seq = await kv.create(id, "a");
@@ -123,7 +131,7 @@ Deno.test("kv - create fails existing key", async () => {
 
 Deno.test("kv - previous revision", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 1024 * 512 });
 
   const seq = await kv.create(id, "a");
@@ -140,7 +148,7 @@ Deno.test("kv - previous revision", async () => {
 
 Deno.test("kvm - keys", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 512 * 1024 });
 
   await Promise.all([
@@ -156,7 +164,7 @@ Deno.test("kvm - keys", async () => {
 
 Deno.test("kv - watch", async () => {
   const nhg = newNHG(getConnectionDetails());
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   const kv = await nhg.kvm.add(id, { max_bytes: 512 * 1024 });
 
   await Promise.all([
@@ -193,7 +201,7 @@ Deno.test("kv - watch", async () => {
 
 Deno.test("kv - info", async () => {
   const kvm = newNHG(getConnectionDetails()).kvm;
-  const id = crypto.randomUUID();
+  const id = randomKvName();
   await assertRejects(
     () => {
       return kvm.info(id);
