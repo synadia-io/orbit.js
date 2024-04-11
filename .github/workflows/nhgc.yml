@@ -1,4 +1,4 @@
-name: NATS.deno
+name: nhgc
 
 on:
   push:
