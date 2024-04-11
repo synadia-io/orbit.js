@@ -51,7 +51,8 @@ jobs:
         env:
           TMPDIR: ${{ runner.temp }}
           CI: true
-          NGS_CI_USER: ${{ secrets.NGS_CI_USER }}
+          NHG_APIKEY: ${{ secrets.NHG_APIKEY }}
+          NHG_URL: ${{ secrets.NHG_URL }}
         run: |
           deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov nhgc
 
