@@ -51,15 +51,44 @@ export interface KvEntry extends KvEntryInfo {
 export type ReviverFn = (key: string, value: unknown) => unknown;
 
 export interface Kv {
+  /**
+   * Creates an entry in the KV only if it doesn't already exist.
+   * @return the revision of the key.
+   * @param key
+   * @param value
+   */
   create(key: string, value?: Value): Promise<number>;
+
+  /**
+   * Retrieves the entry from the KV, or null if the entry doesn't
+   * exist or has been deleted.
+   * @param key
+   * @param revision - if specified will return the value at the specified revision.
+   */
   get(key: string, revision?: number): Promise<KvEntry | null>;
+
+  /**
+   * Adds or updates the specified entry.
+   * @param key
+   * @param value
+   * @param previousRevision - if specified the previous revision for the entry must be the revision specified
+   */
   put(
     key: string,
     value?: Value,
     previousRevision?: number,
   ): Promise<number>;
+
+  /**
+   * Deletes the specified entry.
+   * @param key
+   * @param purge - if specified, history values are removed.
+   */
   delete(key: string, purge?: boolean): Promise<boolean>;
 
+  /**
+   *
+   */
   purge(): Promise<void>;
   keys(filter?: string): Promise<string[]>;
   watch(opts: KvWatchOpts): Promise<Watcher>;

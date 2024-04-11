@@ -63,7 +63,7 @@ Deno.test("kvm - info", async () => {
       return kvm.info(id);
     },
     Error,
-    "404: Not Found",
+    "404: 404 nats: bucket not found",
   );
 
   await kvm.add(id, { max_bytes: 512 * 1024 });
