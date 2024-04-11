@@ -1,8 +1,9 @@
 # nhg.js
 
-This is a prototype API in TypeScript for interacting with KV, ObjectStore, and
-NATS pub-sub over the NATS HTTP Gateway. The NATS HTTP Gateway is a Synadia
-Server that allows clients to communicate with NATS via HTTP protocol.
+This is a prototype API in TypeScript for interacting with KV
+over the NATS HTTP Gateway. The NATS HTTP Gateway is a Synadia
+Server that allows clients to communicate with NATS KV via HTTP protocol.
+The NATS HTTP Gateway is part of the [Synadia Cloud](https://www.synadia.com/).
 
 While no library is needed except for standard libraries built into most
 programming languages a simple wrapper makes it very convenient.
@@ -11,7 +12,7 @@ The NGH client, is an ES module, and depends on `fetch` and `SSE`
 (`EventSource`) for `watch` operations.
 
 To use the gateway you will need the HTTP/S url of the NGH server and an API
-token:
+token.
 
 ```typescript
 // create an instance of the API using the specified connection details
