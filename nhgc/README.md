@@ -11,10 +11,46 @@ programming languages a simple wrapper makes it very convenient.
 The NGH client, is an ES module, and depends on `fetch` and `SSE`
 (`EventSource`) for `watch` operations.
 
+### Installing
+
+The library requires an ESM compatible runtime (like a browser). If you want to
+use outside of the browser it should be possible as long as your runtime allows
+using ESM module and provides any necessary shims (fetch, EventSource).
+
+The open-source package registry [JSR](https://jsr.io), hosts packages. See
+[nhgc](https://jsr.io/@synadiaorbit/nhgc).
+
+```sh
+deno add @synadiaorbit/nhgc
+```
+
+#### Node.js
+
+If you want to run in Node.js, you can:
+
+```sh
+npx jsr add @synadiaorbit/nhgc
+npm install event-source-polyfill
+```
+
+And then shim your code:
+
+```javascript
+import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
+
+const EventSource = NativeEventSource || EventSourcePolyfill;
+// OR: may also need to set as global property
+global.EventSource = NativeEventSource || EventSourcePolyfill;
+```
+
+#### Using
+
 To use the gateway you will need the HTTP/S url of the NGH server and an API
 token.
 
 ```typescript
+import { newNHG } from "@synadiaorbit/nhgc";
+
 // create an instance of the API using the specified connection details
 const nhg = newNHG("https://someurl.com", "someapikey");
 
