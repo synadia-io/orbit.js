@@ -2,7 +2,7 @@
 
 NHGC is a prototype API in TypeScript that interacts with the NATS KV over the
 NATS HTTP Gateway. The NATS HTTP Gateway is a Synadia Server that allows clients
-to communicate with NATS KV via HTTP protocol. The NATS HTTP Gateway is part of
+to communicate with NATS KV via the HTTP protocol. The NATS HTTP Gateway is part of
 the [Synadia Cloud](https://www.synadia.com/).
 
 While no library is needed to interact with the gateway except for standard
