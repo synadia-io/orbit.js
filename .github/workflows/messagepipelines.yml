@@ -3,14 +3,14 @@ name: messagepipelines
 on:
   push:
     paths:
-      - 'messagepipelines/**'
+      - 'messagepipeline/**'
     tags:
       - '*'
     branches:
       - '*'
   pull_request:
     paths:
-      - 'messagepipelines/**'
+      - 'messagepipeline/**'
     branches: [main]
 
 jobs:
