@@ -1,7 +1,7 @@
 # MessagePipeline
 
 The MessagePipeline utility allows you to associate a number of transformations
-on a received messages. In HTTP requests are typically processed by a router
+on received messages. In HTTP requests are typically processed by a router
 which dispatches a path within the URL to a handler function. Routers typically
 use Middleware which allows pre-processing of the requests in order to perform
 an initial validation or transformation of the request.
