@@ -28,7 +28,8 @@ jobs:
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Build
-        run: deno bundle messagepipeline/mod.ts messagepipeline/mod.mjs
+        working-directory: messagepipeline
+        run: deno bundle mod.ts mod.mjs
 
       - name: Upload assets to a Release
         uses: AButler/upload-release-assets@v3.0

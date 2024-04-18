@@ -28,10 +28,11 @@ jobs:
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Build
+        working-directory: nhgc
         run: deno bundle nhgc/mod.ts nhgc/mod.mjs
 
       - name: Upload assets to a Release
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: nhgc/mod.mjs
+          files: mod.mjs
           repo-token: ${{ secrets.GH_TOKEN }}

@@ -99,11 +99,11 @@ if (r.isError) {
 }
 ```
 
-The intention of `Result` is have an efficient pattern for testing if the pipeline
-succeed or failed and preventing errors.
+The intention of `Result` is have an efficient pattern for testing if the
+pipeline succeed or failed and preventing errors.
 
-As you can see, using a Pipeline is very straight forward. It allows you to compose
-repetitive code info a flow that could lead to a simpler handler.
+As you can see, using a Pipeline is very straight forward. It allows you to
+compose repetitive code info a flow that could lead to a simpler handler.
 
 ### Full Example
 

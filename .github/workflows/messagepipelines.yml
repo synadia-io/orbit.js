@@ -23,7 +23,7 @@ jobs:
         deno-version: [1.42.4]
 
     steps:
-      - name: Git Checkout NHGC
+      - name: Git Checkout messagepipelines
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
@@ -34,12 +34,16 @@ jobs:
           deno-version: ${{ matrix.deno-version }}
 
       - name: Lint Deno Module
-        run: deno fmt --check --ignore=docs/
+        working-directory: messagepipeline
+        run: |
+          deno fmt --check --ignore=docs/
+        
 
       - name: Test Deno Module
+        working-directory: messagepipeline
         env:
           TMPDIR: ${{ runner.temp }}
           CI: true
         run: |
-          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov nhgc
+          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov 
 
