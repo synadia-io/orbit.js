@@ -34,16 +34,16 @@ jobs:
           deno-version: ${{ matrix.deno-version }}
 
       - name: Lint Deno Module
+        working-directory: messagepipeline
         run: |
-          cd messagepipeline
           deno fmt --check --ignore=docs/
         
 
       - name: Test Deno Module
+        working-directory: messagepipeline
         env:
           TMPDIR: ${{ runner.temp }}
           CI: true
         run: |
-          cd messagepipeline
           deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov 
 

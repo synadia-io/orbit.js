@@ -34,14 +34,17 @@ jobs:
           deno-version: ${{ matrix.deno-version }}
 
       - name: Lint Deno Module
-        run: deno fmt --check --ignore=docs/
+        working-directory: nhgc
+        run: |
+          deno fmt --check --ignore=docs/
 
       - name: Test Deno Module
+        working-directory: nhgc
         env:
           TMPDIR: ${{ runner.temp }}
           CI: true
           NHG_APIKEY: ${{ secrets.NHG_APIKEY }}
           NHG_URL: ${{ secrets.NHG_URL }}
         run: |
-          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov nhgc
+          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov
 
