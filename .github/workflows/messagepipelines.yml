@@ -1,16 +1,16 @@
-name: nhgc
+name: messagepipelines
 
 on:
   push:
     paths:
-      - 'nhgc/**'
+      - 'messagepipelines/**'
     tags:
       - '*'
     branches:
       - '*'
   pull_request:
     paths:
-      - 'nhgc/**'
+      - 'messagepipelines/**'
     branches: [main]
 
 jobs:
@@ -40,8 +40,6 @@ jobs:
         env:
           TMPDIR: ${{ runner.temp }}
           CI: true
-          NHG_APIKEY: ${{ secrets.NHG_APIKEY }}
-          NHG_URL: ${{ secrets.NHG_URL }}
         run: |
           deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov nhgc
 

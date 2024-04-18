@@ -1,10 +1,10 @@
-name: nhgc release
+name: messagepipelines release
 
 on:
   release:
     types: [created]
     tags:
-      - 'nhgc/*'
+      - 'messagepipelines/*'
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Git Checkout NHGC
+      - name: Git Checkout messagepipelines
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
@@ -28,7 +28,7 @@ jobs:
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Build
-        run: deno bundle nhgc/mod.ts nhgc/mod.mjs
+        run: deno bundle messagepipeline/mod.ts messagepipeline/mod.mjs
 
       - name: Upload assets to a Release
         uses: AButler/upload-release-assets@v3.0

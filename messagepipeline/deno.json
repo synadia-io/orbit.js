@@ -1,0 +1,14 @@
+{
+  "tasks": {
+    "build": "deno bundle --reload mod.ts messagepipeline.js",
+    "test": "rm -Rf ./coverage/ & deno test --allow-all --parallel --reload --quiet --coverage=coverage",
+    "cover": "deno coverage  ./coverage --lcov > ./coverage/out.lcov && genhtml -o ./coverage/html ./coverage/out.lcov && open ./coverage/html/index.html"
+  },
+  "imports": {
+    "nbc/": "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/",
+    "nats": "https://raw.githubusercontent.com/nats-io/nats.deno/pub-msg/src/mod.ts"
+  },
+  "publish": {
+    "include": ["deno.json", "mod.ts"]
+  }
+}
