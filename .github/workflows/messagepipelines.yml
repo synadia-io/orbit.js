@@ -41,5 +41,5 @@ jobs:
           TMPDIR: ${{ runner.temp }}
           CI: true
         run: |
-          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov nhgc
+          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov messagepipeline
 
