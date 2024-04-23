@@ -15,10 +15,21 @@
 import { Kvm } from "./types.ts";
 import { KvmImpl } from "./kvm.ts";
 
+/**
+ * Interface to the API of the NHG
+ */
 export interface NHG {
+  /**
+   * Return an object that you can use to manage or access
+   * KeyValue stores.
+   */
   kvm: Kvm;
 }
 
+/**
+ * Creates a client for the Nats-Http-Gateway.
+ * @param opts
+ */
 export function newNHG(
   opts: { url: string; apiKey: string },
 ): NHG {

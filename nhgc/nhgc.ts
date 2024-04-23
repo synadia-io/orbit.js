@@ -50,7 +50,7 @@ export class HttpImpl implements Http {
     }
     const r = Object.assign(opts, { method, body });
     const headers = new Headers(opts.headers);
-    headers.append("X-Nats-Api-Key", this.apiKey);
+    headers.append("Authorization", this.apiKey);
     r.headers = headers;
     return fetch(u, r);
   }
