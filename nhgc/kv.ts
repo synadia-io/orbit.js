@@ -241,7 +241,7 @@ export class KvImpl extends HttpImpl implements Kv {
     opts: KvWatchOpts,
   ): Promise<KvWatcher> {
     const args: string[] = [];
-    args.push(`X-Nats-Api-Key=${this.apiKey}`);
+    args.push(`authorization=${this.apiKey}`);
 
     const dopts = Object.assign({
       filter: ">",
