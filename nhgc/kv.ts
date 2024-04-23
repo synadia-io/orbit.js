@@ -19,7 +19,7 @@ import {
   KvEntry,
   KvWatchFn,
   KvWatchOpts,
-  Operation,
+  KvOperation,
   ReviverFn,
   toKvChangeEvent,
   Value,
@@ -33,7 +33,7 @@ type KvE = {
   created: string;
   revision: number;
   delta: number;
-  operation: Operation;
+  operation: KvOperation;
   value: Uint8Array;
 };
 
@@ -65,7 +65,7 @@ class KvEntryImpl implements KvEntry {
         created: r.headers.get("X-Nats-Kv-Created") || "",
         revision: parseInt(r.headers.get("X-Nats-Kv-Revision") || "0"),
         delta: parseInt(r.headers.get("X-Nats-Kv-Delta") || "0"),
-        operation: r.headers.get("X-Nats-Kv-Operation") as Operation,
+        operation: r.headers.get("X-Nats-Kv-Operation") as KvOperation,
         value,
       };
       return Promise.resolve(new KvEntryImpl(kve));
@@ -76,7 +76,7 @@ class KvEntryImpl implements KvEntry {
     return this.entry.value;
   }
 
-  get operation(): Operation {
+  get operation(): KvOperation {
     return this.entry.operation;
   }
 
