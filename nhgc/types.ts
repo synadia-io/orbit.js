@@ -17,8 +17,6 @@
  */
 export type Value = string | Uint8Array | ReadableStream<Uint8Array>;
 
-
-
 export function toKvChangeEvent(m: MessageEvent): KvChangeEvent {
   // deno-lint-ignore no-explicit-any
   return JSON.parse(m.data, function (this: any, key: string, value: any): any {
@@ -225,7 +223,6 @@ export type KvBucketConfig = {
  * All history will include all values and their changes recorded in history
  * Updates only will only notify when there's a change in the Kv after the watch is started
  * Last value will notify of the latest values for a key when the watcher starts.
- *
  */
 export type KvInclude = "allHistory" | "updatesOnly" | "lastValue" | "";
 
