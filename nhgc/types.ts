@@ -17,6 +17,10 @@
  */
 export type Value = string | Uint8Array | ReadableStream<Uint8Array>;
 
+/**
+ * This function converts a MessageEvent into a KvChangeEvent
+ * @param m
+ */
 export function toKvChangeEvent(m: MessageEvent): KvChangeEvent {
   // deno-lint-ignore no-explicit-any
   return JSON.parse(m.data, function (this: any, key: string, value: any): any {
@@ -36,11 +40,29 @@ export type KvOperation = "PUT" | "DEL" | "PURGE";
  * KvChangeEvent is the interface of events for a Kv Watch.
  */
 export interface KvChangeEvent {
+  /**
+   * The name of the key
+   */
   key: string;
+  /**
+   * The name of the bucket
+   */
   bucket: string;
+  /**
+   * The created Date for the entry
+   */
   created: Date;
+  /**
+   * The revision of the entry
+   */
   revision: number;
+  /**
+   * The delta from the entry's revision the latest revision in the KV
+   */
   delta: number;
+  /**
+   * The operation type of the entry
+   */
   operation: KvOperation;
 }
 
@@ -48,11 +70,29 @@ export interface KvChangeEvent {
  * KvEntryInfo describes the metadata properties for a KvEntry
  */
 export interface KvEntryInfo {
+  /**
+   * The bucket storing the entry
+   */
   bucket: string;
+  /**
+   * The created Date for the entry
+   */
   created: Date;
+  /**
+   * The revision of the entry
+   */
   revision: number;
+  /**
+   * The delta from the entry's revision the latest revision in the KV
+   */
   delta: number;
+  /**
+   * The operation type of the entry
+   */
   operation: KvOperation;
+  /**
+   * The value of the entry - if string type, it is base64 encoded
+   */
   value: Uint8Array | string;
 }
 
