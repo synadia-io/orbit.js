@@ -361,3 +361,62 @@ export interface Kvm {
    */
   info(bucket: string): Promise<KvBucketInfo>;
 }
+
+export interface Msg {
+  header?: Record<string, string | string[]>;
+  subject: string;
+  reply?: string;
+  data?: Uint8Array;
+
+  string(): string;
+  json<T>(r?: ReviverFn): T;
+}
+
+export type MsgCallback = (err?: Error, msg?: Msg) => void;
+
+export interface Sub {
+  unsubscribe(): void;
+}
+
+export interface Nats {
+  /**
+   * Publishes the specified data to the specified subject.
+   * @param subject
+   * @param data
+   */
+  publish(subject: string, data?: Value): Promise<void>;
+
+  /**
+   * Publishes the specified data to the specified subject with the
+   * specified reply subject.
+   * @param subject
+   * @param reply
+   * @param data
+   */
+  publishWithReply(subject: string, reply: string, data: Value): Promise<void>;
+
+  /**
+   * Publishes a request with specified data in the specified subject expecting a
+   * response before a timeout in milliseconds. The api returns a
+   * Promise that resolves when the first response to the request is received. If
+   * there are no responders (a subscription) listening on the request subject,
+   * the request will fail as soon as the server processes it.
+   * @param subject
+   * @param data
+   * @param timeout
+   */
+  request(
+    subject: string,
+    data: Value,
+    opts?: { timeout?: number; headers?: HeadersInit },
+  ): Promise<Msg>;
+
+  /**
+   * Subscribe expresses interest in the specified subject. The subject may
+   * have wildcards. Messages are delivered to the callback
+   * subscribe(subject: string, cb: MsgCallback): Promise<Sub>;
+   * @param subject
+   * @param cb (err?: Error, msg?: Msg) => void;
+   */
+  subscribe(subject: string, cb: MsgCallback): Promise<Sub>;
+}
