@@ -37,3 +37,20 @@ export function deferred<T>(): Deferred<T> {
   });
   return Object.assign(p, methods) as Deferred<T>;
 }
+
+export function addEventSource(
+  url: string | URL,
+  eventSourceInitDict?: EventSourceInit,
+): Promise<EventSource> {
+  const d = deferred<EventSource>();
+  const es = new EventSource(url, eventSourceInitDict);
+  es.addEventListener("open", () => {
+    d.resolve(es);
+  });
+
+  es.addEventListener("error", () => {
+    d.reject(new Error("error creating the EventSource"));
+  });
+
+  return d;
+}

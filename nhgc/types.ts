@@ -171,6 +171,8 @@ export interface Kv {
 
   /**
    * Returns a watcher that notifies you of changes to the KV.
+   * This creates an EventSource under the hood - note that if
+   * there's an error, the reason for the error is not available.
    * @param opts
    */
   watch(opts: KvWatchOpts): Promise<Watcher>;
@@ -363,7 +365,7 @@ export interface Kvm {
 }
 
 export interface Msg {
-  header?: Record<string, string | string[]>;
+  headers: Headers;
   subject: string;
   reply?: string;
   data?: Uint8Array;
@@ -383,8 +385,13 @@ export interface Nats {
    * Publishes the specified data to the specified subject.
    * @param subject
    * @param data
+   * @param opts - { headers?: HeadersInit }
    */
-  publish(subject: string, data?: Value): Promise<void>;
+  publish(
+    subject: string,
+    data?: Value,
+    opts?: { headers?: HeadersInit },
+  ): Promise<void>;
 
   /**
    * Publishes the specified data to the specified subject with the
@@ -392,8 +399,17 @@ export interface Nats {
    * @param subject
    * @param reply
    * @param data
+   * @param opts - { headers?: HeadersInit }
+   *
+   * You can also specify headers - Note only headers that start with
+   * `NatsH-` are sent via NATS.
    */
-  publishWithReply(subject: string, reply: string, data: Value): Promise<void>;
+  publishWithReply(
+    subject: string,
+    reply: string,
+    data?: Value,
+    opts?: { headers?: HeadersInit },
+  ): Promise<void>;
 
   /**
    * Publishes a request with specified data in the specified subject expecting a
@@ -401,13 +417,18 @@ export interface Nats {
    * Promise that resolves when the first response to the request is received. If
    * there are no responders (a subscription) listening on the request subject,
    * the request will fail as soon as the server processes it.
+   *
+   * You can specify a timeout in milliseconds - default is 2000 milliseconds.
+   *
+   * You can also specify headers - Note only headers that start with
+   * `NatsH-` are sent via NATS.
    * @param subject
    * @param data
-   * @param timeout
+   * @param opts - { timeout?: number; headers?: HeadersInit }
    */
   request(
     subject: string,
-    data: Value,
+    data?: Value,
     opts?: { timeout?: number; headers?: HeadersInit },
   ): Promise<Msg>;
 
@@ -415,8 +436,15 @@ export interface Nats {
    * Subscribe expresses interest in the specified subject. The subject may
    * have wildcards. Messages are delivered to the callback
    * subscribe(subject: string, cb: MsgCallback): Promise<Sub>;
+   * This creates an EventSource under the hood - note that if
+   * there's an error, the reason for the error is not available.
    * @param subject
    * @param cb (err?: Error, msg?: Msg) => void;
    */
   subscribe(subject: string, cb: MsgCallback): Promise<Sub>;
+
+  /**
+   * Performs a round trip to the server.
+   */
+  flush(): Promise<void>;
 }
