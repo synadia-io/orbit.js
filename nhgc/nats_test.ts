@@ -2,7 +2,9 @@ import { newNHG } from "./mod.ts";
 import { delay } from "https://deno.land/std@0.200.0/async/delay.ts";
 import { getConnectionDetails } from "./credentials.ts";
 import {
+  assert,
   assertEquals,
+  assertExists,
   fail,
 } from "https://deno.land/std@0.207.0/assert/mod.ts";
 
@@ -13,22 +15,24 @@ Deno.test("nats - pub", async () => {
 
 Deno.test("nats - sub", async () => {
   const nhg = newNHG(getConnectionDetails());
+  const msgs = [];
   const sub = await nhg.nats.subscribe("hello", (err, msg) => {
     if (err) {
-      console.log(err);
+      fail(err.message);
     } else if (msg) {
-      console.log(msg.string());
+      msgs.push(msg);
     }
   });
 
   const ticker = setInterval(() => {
     nhg.nats.publish("hello", new Date().toISOString())
       .then();
-  }, 1000);
+  }, 250);
 
-  await delay(5000);
-  clearInterval(ticker);
+  await delay(1000);
   sub.unsubscribe();
+  clearInterval(ticker);
+  assert(msgs.length > 0);
 });
 
 Deno.test("nats - request reply", async () => {
@@ -46,6 +50,38 @@ Deno.test("nats - request reply", async () => {
   });
   const r = await nc.request("q", "hello");
   assertEquals(r.string(), "OK: hello");
+  sub.unsubscribe();
+});
 
+Deno.test("nats - publish headers", async () => {
+  const nhg = newNHG(getConnectionDetails());
+  const nc = nhg.nats;
+  const sub = await nc.subscribe("q", (err, msg) => {
+    if (err) {
+      fail(err.message);
+    }
+    assertExists(msg);
+    assertEquals(msg.headers.get("Hello-World"), "Hi");
+  });
+
+  await nc.publish("q", undefined, { headers: { "NatsH-Hello-World": "Hi" } });
+  await nc.flush();
+  sub.unsubscribe();
+});
+
+Deno.test("nats - request headers", async () => {
+  const nhg = newNHG(getConnectionDetails());
+  const nc = nhg.nats;
+  const sub = await nc.subscribe("q", (err, msg) => {
+    if (err) {
+      fail(err.message);
+    }
+    assertExists(msg);
+    assertEquals(msg.headers.get("Hello-World"), "Hi");
+    assertExists(msg.reply);
+    nc.publish(msg.reply);
+  });
+
+  await nc.request("q", undefined, { headers: { "NatsH-Hello-World": "Hi" } });
   sub.unsubscribe();
 });

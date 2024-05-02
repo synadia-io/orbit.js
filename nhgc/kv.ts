@@ -26,7 +26,7 @@ import {
   Watcher,
 } from "./types.ts";
 import { HttpImpl } from "./nhgc.ts";
-import { Deferred, deferred } from "./util.ts";
+import { addEventSource, Deferred, deferred } from "./util.ts";
 
 type KvE = {
   bucket: string;
@@ -272,9 +272,10 @@ export class KvImpl extends HttpImpl implements Kv {
       ? `/v1/kvm/buckets/${this.bucket}/watch?${qs}`
       : `/v1/kvm/buckets/${this.bucket}/watch`;
 
-    return Promise.resolve(
-      new KvWatcher(new EventSource(new URL(path, this.url)), opts.callback),
-    );
+    return addEventSource(new URL(path, this.url))
+      .then((es) => {
+        return new KvWatcher(es, opts.callback);
+      });
   }
 
   async info(): Promise<KvBucketInfo> {

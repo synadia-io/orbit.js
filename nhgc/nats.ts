@@ -8,7 +8,7 @@ import {
   Sub,
   Value,
 } from "./types.ts";
-import { deferred } from "./util.ts";
+import { addEventSource, deferred } from "./util.ts";
 
 interface JsonMsg {
   header?: Record<string, string | string[]>;
@@ -22,13 +22,13 @@ export function toNatsMsg(m: MessageEvent): Msg {
 }
 
 class MsgImpl implements Msg {
-  header?: Record<string, string | string[]>;
+  headers: Headers;
   subject: string;
   reply?: string;
   data?: Uint8Array;
 
   constructor(m: JsonMsg) {
-    this.header = m.header;
+    this.headers = new Headers();
     this.subject = m.subject;
     this.reply = m.reply;
     if (m.data) {
@@ -36,6 +36,17 @@ class MsgImpl implements Msg {
       this.data = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) {
         this.data[i] = bin.charCodeAt(i);
+      }
+    }
+    if (m.header) {
+      for (const p in m.header) {
+        let v = m.header[p];
+        if (!Array.isArray(v)) {
+          v = [v];
+        }
+        v.forEach((vv) => {
+          this.headers.append(p, vv);
+        });
       }
     }
   }
@@ -54,24 +65,31 @@ export class NatsImpl extends HttpImpl implements Nats {
     super(url, apiKey);
   }
 
-  publish(subject: string, data?: Value): Promise<void> {
-    return this.publishWithReply(subject, "", data);
+  publish(subject: string, data?: Value, opts?: {
+    headers?: HeadersInit;
+  }): Promise<void> {
+    return this.publishWithReply(subject, "", data, opts);
   }
   async publishWithReply(
     subject: string,
     reply: string,
     data?: Value,
+    opts?: { headers?: HeadersInit },
   ): Promise<void> {
-    const opts = [];
+    const args = [];
     if (reply?.length > 0) {
-      opts.push(`reply=${encodeURIComponent(reply)}`);
+      args.push(`reply=${encodeURIComponent(reply)}`);
     }
-    const qs = opts.length ? opts.join("&") : "";
+    const qs = args.length ? args.join("&") : "";
     const p = qs
       ? `/v1/nats/subjects/${subject}?${qs}`
       : `/v1/nats/subjects/${subject}`;
 
-    const r = await this.doFetch("PUT", p, data);
+    opts = opts || {};
+    const hi = opts.headers || {};
+    const headers = new Headers(hi);
+
+    const r = await this.doFetch("PUT", p, data, { headers });
     if (!r.ok) {
       return this.handleError(r);
     }
@@ -80,8 +98,8 @@ export class NatsImpl extends HttpImpl implements Nats {
   }
   async request(
     subject: string,
-    data: Value,
-    opts?: { timeout?: number },
+    data?: Value,
+    opts?: { timeout?: number; headers?: HeadersInit },
   ): Promise<Msg> {
     const args = [];
     opts = opts || {};
@@ -95,12 +113,15 @@ export class NatsImpl extends HttpImpl implements Nats {
       ? `/v1/nats/subjects/${subject}?${qs}`
       : `/v1/nats/subjects/${subject}`;
 
+    const headers = opts.headers ? new Headers(opts.headers) : new Headers();
+    headers.append("Accept", "application/json");
+
     const r = await this.doFetch(
       "POST",
       p,
       data,
       {
-        headers: { "Accept": "application/json" },
+        headers,
       },
     );
 
@@ -119,16 +140,35 @@ export class NatsImpl extends HttpImpl implements Nats {
     }
     const qs = args.length ? args.join("&") : "";
     const path = `/v1/nats/subjects/${subject}?${qs}`;
-    return Promise.resolve(new EventSource(new URL(path, this.url)));
+
+    return addEventSource(new URL(path, this.url));
   }
 
   async subscribe(subject: string, cb: MsgCallback): Promise<Sub> {
-    const d = deferred<Sub>();
     const es = await this.sub(subject);
-    es.addEventListener("open", () => {
-      d.resolve(new SubImpl(es, cb));
+    return Promise.resolve(new SubImpl(es, cb));
+  }
+
+  async flush(): Promise<void> {
+    // this here until gateway supports flush directly
+    function inbox(length = 6): string {
+      return Math.random().toString(20).substring(2, length - 1);
+    }
+
+    const subj = `_INBOX.${inbox()}`;
+
+    const d = deferred<void>();
+    const sub = await this.subscribe(subj, (err) => {
+      if (err) {
+        d.reject(err.message);
+        sub.unsubscribe();
+      } else {
+        d.resolve();
+        sub.unsubscribe();
+      }
     });
 
+    await this.publish(subj).then();
     return d;
   }
 }
