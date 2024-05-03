@@ -46,7 +46,8 @@ await nc.publish("hello", "world", {
   },
 });
 
-// Implementing a service is simply a subscription that replies
+// Implementing a service is simply a subscription that replies - services are usually
+// in a queue group so they distribute the load
 const svc = await nc.subscribe("q", async (err, msg) => {
   if (err) {
     console.error(err.message);
@@ -63,7 +64,7 @@ const svc = await nc.subscribe("q", async (err, msg) => {
   } else {
     console.log("message doesn't have a reply - ignoring");
   }
-});
+}, { queue: "a" });
 
 // to trigger a request:
 const r = await nc.request("q", "question", {

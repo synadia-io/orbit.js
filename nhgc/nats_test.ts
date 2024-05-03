@@ -85,3 +85,38 @@ Deno.test("nats - request headers", async () => {
   await nc.request("q", undefined, { headers: { "NatsH-Hello-World": "Hi" } });
   sub.unsubscribe();
 });
+
+Deno.test("nats - queue subs", async () => {
+  const nhg = newNHG(getConnectionDetails());
+  const nc = nhg.nats;
+
+  const a = [];
+  const sub1 = await nc.subscribe("q.*", (err, msg) => {
+    if (err) {
+      fail(err.message);
+    }
+    a.push(msg?.subject);
+  }, { queue: "hello" });
+
+  const b = [];
+  const sub2 = await nc.subscribe("q.*", (err, msg) => {
+    if (err) {
+      fail(err.message);
+    }
+    b.push(msg?.subject);
+  }, { queue: "hello" });
+
+  const proms = [];
+  for (let i = 0; i < 100; i++) {
+    proms.push(nc.publish(`q.${i}`));
+  }
+  proms.push(nc.flush());
+  proms.push(await delay(1000));
+
+  await Promise.all(proms);
+
+  assertEquals(a.length + b.length, 100);
+
+  sub1.unsubscribe();
+  sub2.unsubscribe();
+});

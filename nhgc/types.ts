@@ -317,6 +317,13 @@ export type HeartbeatOpts = {
   idleHeartbeat?: number;
 };
 
+export type SubOpts = {
+  /**
+   * NATS queue group to place the subscription under
+   */
+  queue: string;
+} & HeartbeatOpts;
+
 export type WatchOpts = HeartbeatOpts & {
   /**
    * Values to include in the updates
@@ -440,8 +447,13 @@ export interface Nats {
    * there's an error, the reason for the error is not available.
    * @param subject
    * @param cb (err?: Error, msg?: Msg) => void;
+   * @param opts subscription options
    */
-  subscribe(subject: string, cb: MsgCallback): Promise<Sub>;
+  subscribe(
+    subject: string,
+    cb: MsgCallback,
+    opts?: Partial<SubOpts>,
+  ): Promise<Sub>;
 
   /**
    * Performs a round trip to the server.
