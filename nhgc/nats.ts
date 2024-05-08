@@ -1,11 +1,11 @@
 import { HttpImpl } from "./nhgc.ts";
 import {
-  HeartbeatOpts,
   Msg,
   MsgCallback,
   Nats,
   ReviverFn,
   Sub,
+  SubOpts,
   Value,
 } from "./types.ts";
 import { addEventSource, deferred } from "./util.ts";
@@ -131,21 +131,29 @@ export class NatsImpl extends HttpImpl implements Nats {
     return new MsgImpl(await r.json());
   }
 
-  sub(subject: string, opts?: HeartbeatOpts): Promise<EventSource> {
+  sub(subject: string, opts: Partial<SubOpts> = {}): Promise<EventSource> {
     const args = [];
     args.push(`authorization=${this.apiKey}`);
 
-    if (opts && opts.idleHeartbeat && opts.idleHeartbeat > 0) {
+    if (opts.idleHeartbeat && opts.idleHeartbeat > 0) {
       args.push(`idleHeartbeat=${opts.idleHeartbeat}`);
     }
+    if (opts.queue) {
+      args.push(`queue=${encodeURIComponent(opts.queue)}`);
+    }
+
     const qs = args.length ? args.join("&") : "";
     const path = `/v1/nats/subjects/${subject}?${qs}`;
 
     return addEventSource(new URL(path, this.url));
   }
 
-  async subscribe(subject: string, cb: MsgCallback): Promise<Sub> {
-    const es = await this.sub(subject);
+  async subscribe(
+    subject: string,
+    cb: MsgCallback,
+    opts: Partial<SubOpts> = {},
+  ): Promise<Sub> {
+    const es = await this.sub(subject, opts);
     return Promise.resolve(new SubImpl(es, cb));
   }
 
