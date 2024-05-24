@@ -5,7 +5,7 @@
 Orbit.js is a set of independent utilities around NATS ecosystem that aims to
 boost productivity and provide higher abstraction layer for NATS Javascript
 clients. Note that these libraries will evolve rapidly and API guarantees are
-not made until the the specific project has a v1.0.0 version.
+not made until the specific project has a v1.0.0 version.
 
 # Utilities
 
