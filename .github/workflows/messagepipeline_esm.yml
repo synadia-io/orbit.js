@@ -27,15 +27,12 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ matrix.deno-version }}
-      - name: Build
-        working-directory: messagepipeline
-        run: deno bundle mod.ts mod.mjs
       - name: Test
         working-directory: messagepipeline
-        run: |
+        run: | 
+          deno task build
           deno test -A
           deno task clean
-
       - name: Publish
         working-directory: messagepipeline
         run: deno publish
