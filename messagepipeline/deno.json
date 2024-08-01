@@ -9,7 +9,8 @@
   },
   "tasks": {
     "build": "deno bundle --reload mod.ts messagepipeline.js",
-    "test": "rm -Rf ./coverage/ & deno test --allow-all --parallel --reload --quiet --coverage=coverage",
+    "clean": "rm -Rf ./coverage messagepipeline.js",
+    "test": "deno task clean & deno test --allow-all --parallel --reload --quiet --coverage=coverage",
     "cover": "deno coverage  ./coverage --lcov > ./coverage/out.lcov && genhtml -o ./coverage/html ./coverage/out.lcov && open ./coverage/html/index.html"
   },
   "imports": {

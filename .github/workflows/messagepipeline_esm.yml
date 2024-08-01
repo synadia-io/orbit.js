@@ -32,7 +32,10 @@ jobs:
         run: deno bundle mod.ts mod.mjs
       - name: Test
         working-directory: messagepipeline
-        run: deno test -A
+        run: |
+          deno test -A
+          deno task clean
+
       - name: Publish
         working-directory: messagepipeline
         run: deno publish
