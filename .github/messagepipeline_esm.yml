@@ -1,0 +1,36 @@
+name: messagepipeline release
+
+on:
+  release:
+    types: [created]
+    tags:
+      - 'messagepipeline/*'
+
+jobs:
+  test:
+    environment: CI
+    strategy:
+      matrix:
+        deno-version: [1.45.4]
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Git Checkout messagepipelines
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Use Deno Version ${{ matrix.deno-version }}
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno-version }}
+      - name: Build
+        working-directory: messagepipeline
+        run: deno bundle mod.ts mod.mjs
+      - name: Test
+        working-directory: messagepipeline
+        run: deno test -A
+

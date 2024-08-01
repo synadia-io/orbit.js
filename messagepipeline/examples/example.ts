@@ -1,0 +1,58 @@
+import { MutableMsg, Pipeline } from "../mod.ts";
+import { connect, Empty, headers } from "jsr:@nats-io/transport-deno@3.0.0-5";
+import type { Msg } from "jsr:@nats-io/transport-deno@3.0.0-5";
+
+function valid(m: Msg): Msg {
+  if (m.data.length > 0) {
+    return MutableMsg.fromMsg(m);
+  } else {
+    // so you could respond here, the code base needs to be certain
+    // that of that behaviour as there's nothing preventing another
+    // respond elsewhere.
+    const h = headers();
+    h.set("Error", "message is empty");
+    m.respond(Empty, { headers: h });
+    // the throws will be caught by the pipeline, which can then
+    // choose to ignore the message
+    throw new Error("message is empty");
+  }
+}
+
+function reverse(m: Msg): Msg {
+  try {
+    const mm = MutableMsg.fromMsg(m);
+    mm.data = new TextEncoder().encode(m.string().split("").reverse().join(""));
+    return mm;
+  } catch (err) {
+    const h = headers();
+    h.set("Error", err.message);
+    m.respond(Empty, { headers: h });
+    // the throws will be caught by the pipeline, which can then
+    // choose to ignore the message
+    throw err;
+  }
+}
+
+const nc = await connect({ servers: ["demo.nats.io"] });
+const iter = nc.subscribe("hello");
+(async () => {
+  const pipeline = new Pipeline(valid, reverse);
+  for await (const m of iter) {
+    try {
+      const r = await pipeline.transform(m);
+      nc.respondMessage(r);
+    } catch (_) {
+      m.respond("error");
+    }
+  }
+})();
+await nc.flush();
+
+const nc2 = await connect({ servers: ["demo.nats.io"] });
+let i = 0;
+setInterval(() => {
+  nc2.request("hello", `hello ${++i}`)
+    .then((r) => {
+      console.log(r.string());
+    });
+}, 1000);
