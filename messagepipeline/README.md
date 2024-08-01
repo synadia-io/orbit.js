@@ -21,13 +21,11 @@ The open-source package registry [JSR](https://jsr.io), hosts packages. See
 [messagepipeline](https://jsr.io/@synadiaorbit/messagepipeline).
 
 ```sh
-deno add @synadiaorbit/messagepipeline
+deno add @synadia-io/messagepipeline
 ```
 
 ### Pipeline Functions
 
-There are two variants for a pipeline. One is for `Sync` pipelines and the other
-is for `Async`.
 
 The base functionality for a pipeline is a function `PipelineFn` that takes a
 `Msg` and returns a `Msg` or a `Promise<Msg>` in return:
