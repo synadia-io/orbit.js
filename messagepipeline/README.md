@@ -26,7 +26,6 @@ deno add @synadia-io/messagepipeline
 
 ### Pipeline Functions
 
-
 The base functionality for a pipeline is a function `PipelineFn` that takes a
 `Msg` and returns a `Msg` or a `Promise<Msg>` in return:
 
