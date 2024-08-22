@@ -3,10 +3,12 @@
   "packages": {
     "specifiers": {
       "jsr:@nats-io/nats-core@^3.0.0-19": "jsr:@nats-io/nats-core@3.0.0-19",
-      "jsr:@nats-io/nats-core@~3.0.0-19": "jsr:@nats-io/nats-core@3.0.0-19",
+      "jsr:@nats-io/nats-core@^3.0.0-25": "jsr:@nats-io/nats-core@3.0.0-25",
+      "jsr:@nats-io/nats-core@~3.0.0-19": "jsr:@nats-io/nats-core@3.0.0-25",
+      "jsr:@nats-io/nats-core@~3.0.0-24": "jsr:@nats-io/nats-core@3.0.0-25",
       "jsr:@nats-io/nkeys@1.2.0-4": "jsr:@nats-io/nkeys@1.2.0-4",
       "jsr:@nats-io/nuid@2.0.1-2": "jsr:@nats-io/nuid@2.0.1-2",
-      "jsr:@nats-io/services@^3.0.0-2": "jsr:@nats-io/services@3.0.0-2",
+      "jsr:@nats-io/services@^3.0.0-5": "jsr:@nats-io/services@3.0.0-5",
       "jsr:@nats-io/transport-deno@3.0.0-5": "jsr:@nats-io/transport-deno@3.0.0-5",
       "jsr:@std/assert@^0.224.0": "jsr:@std/assert@0.224.0",
       "jsr:@std/bytes@^0.224.0": "jsr:@std/bytes@0.224.0",
@@ -20,16 +22,23 @@
           "jsr:@nats-io/nuid@2.0.1-2"
         ]
       },
+      "@nats-io/nats-core@3.0.0-25": {
+        "integrity": "0b739497d22bf913ef73a0c30e5998513619a1a735a5cbf3403914aa43f3d793",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.2.0-4",
+          "jsr:@nats-io/nuid@2.0.1-2"
+        ]
+      },
       "@nats-io/nkeys@1.2.0-4": {
         "integrity": "6cbfe6e04f3d25c30e1d3a76e9ce565ad43c8be35fbc8c5f1dd5f85b6196967e"
       },
       "@nats-io/nuid@2.0.1-2": {
         "integrity": "0cf115cfbc5e93c81464696e1c2cf3fdcd43d8aa23ba7446067d8e91029d39b8"
       },
-      "@nats-io/services@3.0.0-2": {
-        "integrity": "5b2131772a2fca742a453c218a2959fa1c7ae3aec5ea92592092b05816102686",
+      "@nats-io/services@3.0.0-5": {
+        "integrity": "4e3135a65fb5f4dc756012cfd4e794c7765a3b3d84b3499f245789d04974e5fe",
         "dependencies": [
-          "jsr:@nats-io/nats-core@~3.0.0-19"
+          "jsr:@nats-io/nats-core@~3.0.0-24"
         ]
       },
       "@nats-io/transport-deno@3.0.0-5": {
@@ -202,8 +211,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@nats-io/nats-core@^3.0.0-19",
-      "jsr:@nats-io/services@^3.0.0-2"
+      "jsr:@nats-io/nats-core@^3.0.0-25",
+      "jsr:@nats-io/services@^3.0.0-5"
     ]
   }
 }

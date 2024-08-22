@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Synadia Authors
+ * Copyright 2024 Synadia Communications, Inc
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   Kv,
   KvBucketInfo,
   KvEntry,
@@ -21,12 +21,13 @@ import {
   KvWatchFn,
   KvWatchOpts,
   ReviverFn,
-  toKvChangeEvent,
   Value,
   Watcher,
 } from "./types.ts";
+import { toKvChangeEvent } from "./types.ts";
 import { HttpImpl } from "./nhgc.ts";
-import { addEventSource, Deferred, deferred } from "./util.ts";
+import { addEventSource, deferred } from "./util.ts";
+import type { Deferred } from "./util.ts";
 
 type KvE = {
   bucket: string;
