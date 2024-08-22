@@ -1,5 +1,5 @@
 import { HttpImpl } from "./nhgc.ts";
-import {
+import type {
   Msg,
   MsgCallback,
   Nats,
