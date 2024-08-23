@@ -1,0 +1,418 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "jsr:@nats-io/jwt@0.0.10-1": "jsr:@nats-io/jwt@0.0.10-1",
+      "jsr:@nats-io/jwt@0.0.10-2": "jsr:@nats-io/jwt@0.0.10-2",
+      "jsr:@nats-io/jwt@0.0.9-3": "jsr:@nats-io/jwt@0.0.9-3",
+      "jsr:@nats-io/jwt@^0.0.10-5": "jsr:@nats-io/jwt@0.0.10-5",
+      "jsr:@nats-io/nats-core@3.0.0-1": "jsr:@nats-io/nats-core@3.0.0-1",
+      "jsr:@nats-io/nats-core@3.0.0-14": "jsr:@nats-io/nats-core@3.0.0-14",
+      "jsr:@nats-io/nats-core@3.0.0-15": "jsr:@nats-io/nats-core@3.0.0-15",
+      "jsr:@nats-io/nats-core@^3.0.0-25": "jsr:@nats-io/nats-core@3.0.0-25",
+      "jsr:@nats-io/nats-core@~3.0.0-24": "jsr:@nats-io/nats-core@3.0.0-25",
+      "jsr:@nats-io/nats-transport-deno@3.0.0-4": "jsr:@nats-io/nats-transport-deno@3.0.0-4",
+      "jsr:@nats-io/nkeys@1.1.1-1": "jsr:@nats-io/nkeys@1.1.1-1",
+      "jsr:@nats-io/nkeys@1.2.0-4": "jsr:@nats-io/nkeys@1.2.0-4",
+      "jsr:@nats-io/nkeys@^1.2.0-4": "jsr:@nats-io/nkeys@1.2.0-4",
+      "jsr:@nats-io/nuid@2.0.0": "jsr:@nats-io/nuid@2.0.0",
+      "jsr:@nats-io/nuid@2.0.0-1": "jsr:@nats-io/nuid@2.0.0-1",
+      "jsr:@nats-io/nuid@2.0.1-2": "jsr:@nats-io/nuid@2.0.1-2",
+      "jsr:@nats-io/nuid@^2.0.0": "jsr:@nats-io/nuid@2.0.0",
+      "jsr:@nats-io/services@3.0.0-1": "jsr:@nats-io/services@3.0.0-1",
+      "jsr:@nats-io/services@^3.0.0-1": "jsr:@nats-io/services@3.0.0-1",
+      "jsr:@nats-io/transport-deno@^3.0.0-6": "jsr:@nats-io/transport-deno@3.0.0-6",
+      "jsr:@std/assert": "jsr:@std/assert@1.0.2",
+      "jsr:@std/assert@^0.224.0": "jsr:@std/assert@0.224.0",
+      "jsr:@std/assert@^1.0.2": "jsr:@std/assert@1.0.2",
+      "jsr:@std/bytes@^0.224.0": "jsr:@std/bytes@0.224.0",
+      "jsr:@std/bytes@^1.0.2-rc.3": "jsr:@std/bytes@1.0.2",
+      "jsr:@std/fmt": "jsr:@std/fmt@0.224.0",
+      "jsr:@std/fmt@^0.224.0": "jsr:@std/fmt@0.224.0",
+      "jsr:@std/internal@^0.224.0": "jsr:@std/internal@0.224.0",
+      "jsr:@std/internal@^1.0.0": "jsr:@std/internal@1.0.0",
+      "jsr:@std/internal@^1.0.1": "jsr:@std/internal@1.0.1",
+      "jsr:@std/io@0.224.0": "jsr:@std/io@0.224.0",
+      "jsr:@std/io@^0.224.5": "jsr:@std/io@0.224.5",
+      "jsr:@std/path": "jsr:@std/path@1.0.2"
+    },
+    "jsr": {
+      "@nats-io/jwt@0.0.10-1": {
+        "integrity": "9003993d8b6f7b8be36a2820b5b50a97036e0a6a17534edbdff042d95bcc0830",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.1.1-1"
+        ]
+      },
+      "@nats-io/jwt@0.0.10-2": {
+        "integrity": "9ecfff6ff757c7db5d3c700ca1e9a43fcd6296fe3a1f0f478d7ae3b836bbd479",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.1.1-1"
+        ]
+      },
+      "@nats-io/jwt@0.0.10-5": {
+        "integrity": "949e2c3fbaeb659eded28661f971c1da4425f6d7256b4c61a1628ea56f06c7ee",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.2.0-4"
+        ]
+      },
+      "@nats-io/jwt@0.0.9-3": {
+        "integrity": "65f8b095c32ef68e6dd61af2be121cf633aa93e3c6baed012f7c8d7975895bfa",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.1.1-1"
+        ]
+      },
+      "@nats-io/nats-core@3.0.0-1": {
+        "integrity": "ed6b6fe74418f5e054c19eb9315a1348c602fc7e475bc5075997c4d2348ff8e6",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.1.1-1",
+          "jsr:@nats-io/nuid@2.0.0-1"
+        ]
+      },
+      "@nats-io/nats-core@3.0.0-14": {
+        "integrity": "82d7dfe248288748ca3a26ef36ea12ab81c3c66dd30c16e89714b2e4d31caaea",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.1.1-1",
+          "jsr:@nats-io/nuid@2.0.0-1"
+        ]
+      },
+      "@nats-io/nats-core@3.0.0-15": {
+        "integrity": "e63d328dff57a7e49dd58eb77d7ae7ed688fcde035ad5a5dbfd79ef315c6a1ec",
+        "dependencies": [
+          "jsr:@nats-io/nuid@2.0.0"
+        ]
+      },
+      "@nats-io/nats-core@3.0.0-25": {
+        "integrity": "0b739497d22bf913ef73a0c30e5998513619a1a735a5cbf3403914aa43f3d793",
+        "dependencies": [
+          "jsr:@nats-io/nkeys@1.2.0-4",
+          "jsr:@nats-io/nuid@2.0.1-2"
+        ]
+      },
+      "@nats-io/nats-transport-deno@3.0.0-4": {
+        "integrity": "4abd0391381a420c6aa608d46ca3304285ba85f1edd79e2159551db943db169b",
+        "dependencies": [
+          "jsr:@nats-io/nats-core@3.0.0-15",
+          "jsr:@std/io@0.224.0"
+        ]
+      },
+      "@nats-io/nkeys@1.1.1-1": {
+        "integrity": "c3c60bb21f1b72811e50d6a4ddbee5422b77a16e839aad64ba1a16bba2eb94fc"
+      },
+      "@nats-io/nkeys@1.2.0-4": {
+        "integrity": "6cbfe6e04f3d25c30e1d3a76e9ce565ad43c8be35fbc8c5f1dd5f85b6196967e"
+      },
+      "@nats-io/nuid@2.0.0": {
+        "integrity": "6f0e0fe20045fab4e683ce219a47127f31dbe81b86a1db0046eb3f3a2acdd174"
+      },
+      "@nats-io/nuid@2.0.0-1": {
+        "integrity": "c12a5849dd239a91319d769df555ae9e8f39f5889013be4a5c1bf52616b08ec3"
+      },
+      "@nats-io/nuid@2.0.1-2": {
+        "integrity": "0cf115cfbc5e93c81464696e1c2cf3fdcd43d8aa23ba7446067d8e91029d39b8"
+      },
+      "@nats-io/services@3.0.0-1": {
+        "integrity": "a6d68d020bd1cbf9c3fe4c013e3bc1a09cdccd563b098ceaaceddc0ca6f60c63",
+        "dependencies": [
+          "jsr:@nats-io/nats-core@3.0.0-14"
+        ]
+      },
+      "@nats-io/transport-deno@3.0.0-6": {
+        "integrity": "7db22b45332c21a0cab3b0935f50292001b8a2da936f34e3effda0818119085e",
+        "dependencies": [
+          "jsr:@nats-io/nats-core@~3.0.0-24",
+          "jsr:@std/io@0.224.0"
+        ]
+      },
+      "@std/assert@0.224.0": {
+        "integrity": "8643233ec7aec38a940a8264a6e3eed9bfa44e7a71cc6b3c8874213ff401967f",
+        "dependencies": [
+          "jsr:@std/fmt@^0.224.0",
+          "jsr:@std/internal@^0.224.0"
+        ]
+      },
+      "@std/assert@0.226.0": {
+        "integrity": "0dfb5f7c7723c18cec118e080fec76ce15b4c31154b15ad2bd74822603ef75b3",
+        "dependencies": [
+          "jsr:@std/internal@^1.0.0"
+        ]
+      },
+      "@std/assert@1.0.2": {
+        "integrity": "ccacec332958126deaceb5c63ff8b4eaf9f5ed0eac9feccf124110435e59e49c",
+        "dependencies": [
+          "jsr:@std/internal@^1.0.1"
+        ]
+      },
+      "@std/bytes@0.224.0": {
+        "integrity": "a2250e1d0eb7d1c5a426f21267ab9bdeac2447fa87a3d0d1a467d3f7a6058e49"
+      },
+      "@std/bytes@1.0.2": {
+        "integrity": "fbdee322bbd8c599a6af186a1603b3355e59a5fb1baa139f8f4c3c9a1b3e3d57"
+      },
+      "@std/fmt@0.224.0": {
+        "integrity": "e20e9a2312a8b5393272c26191c0a68eda8d2c4b08b046bad1673148f1d69851"
+      },
+      "@std/internal@0.224.0": {
+        "integrity": "afc50644f9cdf4495eeb80523a8f6d27226b4b36c45c7c195dfccad4b8509291"
+      },
+      "@std/internal@1.0.0": {
+        "integrity": "ac6a6dfebf838582c4b4f61a6907374e27e05bedb6ce276e0f1608fe84e7cd9a"
+      },
+      "@std/internal@1.0.1": {
+        "integrity": "6f8c7544d06a11dd256c8d6ba54b11ed870aac6c5aeafff499892662c57673e6"
+      },
+      "@std/io@0.224.0": {
+        "integrity": "0aff885d21d829c050b8a08b1d71b54aed5841aecf227f8d77e99ec529a11e8e",
+        "dependencies": [
+          "jsr:@std/assert@^0.224.0",
+          "jsr:@std/bytes@^0.224.0"
+        ]
+      },
+      "@std/io@0.224.5": {
+        "integrity": "cb84fe655d1273fca94efcff411465027a8b0b4225203f19d6ee98d9c8920a2d",
+        "dependencies": [
+          "jsr:@std/bytes@^1.0.2-rc.3"
+        ]
+      },
+      "@std/path@1.0.2": {
+        "integrity": "a452174603f8c620bd278a380c596437a9eef50c891c64b85812f735245d9ec7"
+      }
+    }
+  },
+  "remote": {
+    "https://deno.land/std@0.221.0/assert/_constants.ts": "a271e8ef5a573f1df8e822a6eb9d09df064ad66a4390f21b3e31f820a38e0975",
+    "https://deno.land/std@0.221.0/assert/_diff.ts": "4bf42969aa8b1a33aaf23eb8e478b011bfaa31b82d85d2ff4b5c4662d8780d2b",
+    "https://deno.land/std@0.221.0/assert/_format.ts": "0ba808961bf678437fb486b56405b6fefad2cf87b5809667c781ddee8c32aff4",
+    "https://deno.land/std@0.221.0/assert/assert.ts": "bec068b2fccdd434c138a555b19a2c2393b71dfaada02b7d568a01541e67cdc5",
+    "https://deno.land/std@0.221.0/assert/assert_almost_equals.ts": "8b96b7385cc117668b0720115eb6ee73d04c9bcb2f5d2344d674918c9113688f",
+    "https://deno.land/std@0.221.0/assert/assert_array_includes.ts": "1688d76317fd45b7e93ef9e2765f112fdf2b7c9821016cdfb380b9445374aed1",
+    "https://deno.land/std@0.221.0/assert/assert_equals.ts": "4497c56fe7d2993b0d447926702802fc0becb44e319079e8eca39b482ee01b4e",
+    "https://deno.land/std@0.221.0/assert/assert_exists.ts": "24a7bf965e634f909242cd09fbaf38bde6b791128ece08e33ab08586a7cc55c9",
+    "https://deno.land/std@0.221.0/assert/assert_false.ts": "6f382568e5128c0f855e5f7dbda8624c1ed9af4fcc33ef4a9afeeedcdce99769",
+    "https://deno.land/std@0.221.0/assert/assert_greater.ts": "4945cf5729f1a38874d7e589e0fe5cc5cd5abe5573ca2ddca9d3791aa891856c",
+    "https://deno.land/std@0.221.0/assert/assert_greater_or_equal.ts": "573ed8823283b8d94b7443eb69a849a3c369a8eb9666b2d1db50c33763a5d219",
+    "https://deno.land/std@0.221.0/assert/assert_instance_of.ts": "72dc1faff1e248692d873c89382fa1579dd7b53b56d52f37f9874a75b11ba444",
+    "https://deno.land/std@0.221.0/assert/assert_is_error.ts": "6596f2b5ba89ba2fe9b074f75e9318cda97a2381e59d476812e30077fbdb6ed2",
+    "https://deno.land/std@0.221.0/assert/assert_less.ts": "2b4b3fe7910f65f7be52212f19c3977ecb8ba5b2d6d0a296c83cde42920bb005",
+    "https://deno.land/std@0.221.0/assert/assert_less_or_equal.ts": "b93d212fe669fbde959e35b3437ac9a4468f2e6b77377e7b6ea2cfdd825d38a0",
+    "https://deno.land/std@0.221.0/assert/assert_match.ts": "ec2d9680ed3e7b9746ec57ec923a17eef6d476202f339ad91d22277d7f1d16e1",
+    "https://deno.land/std@0.221.0/assert/assert_not_equals.ts": "ac86413ab70ffb14fdfc41740ba579a983fe355ba0ce4a9ab685e6b8e7f6a250",
+    "https://deno.land/std@0.221.0/assert/assert_not_instance_of.ts": "8f720d92d83775c40b2542a8d76c60c2d4aeddaf8713c8d11df8984af2604931",
+    "https://deno.land/std@0.221.0/assert/assert_not_match.ts": "b4b7c77f146963e2b673c1ce4846473703409eb93f5ab0eb60f6e6f8aeffe39f",
+    "https://deno.land/std@0.221.0/assert/assert_not_strict_equals.ts": "da0b8ab60a45d5a9371088378e5313f624799470c3b54c76e8b8abeec40a77be",
+    "https://deno.land/std@0.221.0/assert/assert_object_match.ts": "e85e5eef62a56ce364c3afdd27978ccab979288a3e772e6855c270a7b118fa49",
+    "https://deno.land/std@0.221.0/assert/assert_rejects.ts": "5206ac37d883797d9504e3915a0c7b692df6efcdefff3889cc14bb5a325641dd",
+    "https://deno.land/std@0.221.0/assert/assert_strict_equals.ts": "0425a98f70badccb151644c902384c12771a93e65f8ff610244b8147b03a2366",
+    "https://deno.land/std@0.221.0/assert/assert_string_includes.ts": "dfb072a890167146f8e5bdd6fde887ce4657098e9f71f12716ef37f35fb6f4a7",
+    "https://deno.land/std@0.221.0/assert/assert_throws.ts": "31f3c061338aec2c2c33731973d58ccd4f14e42f355501541409ee958d2eb8e5",
+    "https://deno.land/std@0.221.0/assert/assertion_error.ts": "9f689a101ee586c4ce92f52fa7ddd362e86434ffdf1f848e45987dc7689976b8",
+    "https://deno.land/std@0.221.0/assert/equal.ts": "fae5e8a52a11d3ac694bbe1a53e13a7969e3f60791262312e91a3e741ae519e2",
+    "https://deno.land/std@0.221.0/assert/fail.ts": "f310e51992bac8e54f5fd8e44d098638434b2edb802383690e0d7a9be1979f1c",
+    "https://deno.land/std@0.221.0/assert/mod.ts": "7e41449e77a31fef91534379716971bebcfc12686e143d38ada5438e04d4a90e",
+    "https://deno.land/std@0.221.0/assert/unimplemented.ts": "47ca67d1c6dc53abd0bd729b71a31e0825fc452dbcd4fde4ca06789d5644e7fd",
+    "https://deno.land/std@0.221.0/assert/unreachable.ts": "3670816a4ab3214349acb6730e3e6f5299021234657eefe05b48092f3848c270",
+    "https://deno.land/std@0.221.0/fmt/colors.ts": "d239d84620b921ea520125d778947881f62c50e78deef2657073840b8af9559a",
+    "https://deno.land/std@0.221.0/io/types.ts": "acecb3074c730b5ff487ba4fe9ce51e67bd982aa07c95e5f5679b7b2f24ad129",
+    "https://deno.land/std@0.221.0/io/write_all.ts": "24aac2312bb21096ae3ae0b102b22c26164d3249dff96dbac130958aa736f038",
+    "https://deno.land/std@0.221.0/path/_common/assert_path.ts": "dbdd757a465b690b2cc72fc5fb7698c51507dec6bfafce4ca500c46b76ff7bd8",
+    "https://deno.land/std@0.221.0/path/_common/basename.ts": "569744855bc8445f3a56087fd2aed56bdad39da971a8d92b138c9913aecc5fa2",
+    "https://deno.land/std@0.221.0/path/_common/common.ts": "ef73c2860694775fe8ffcbcdd387f9f97c7a656febf0daa8c73b56f4d8a7bd4c",
+    "https://deno.land/std@0.221.0/path/_common/constants.ts": "dc5f8057159f4b48cd304eb3027e42f1148cf4df1fb4240774d3492b5d12ac0c",
+    "https://deno.land/std@0.221.0/path/_common/dirname.ts": "684df4aa71a04bbcc346c692c8485594fc8a90b9408dfbc26ff32cf3e0c98cc8",
+    "https://deno.land/std@0.221.0/path/_common/format.ts": "92500e91ea5de21c97f5fe91e178bae62af524b72d5fcd246d6d60ae4bcada8b",
+    "https://deno.land/std@0.221.0/path/_common/from_file_url.ts": "d672bdeebc11bf80e99bf266f886c70963107bdd31134c4e249eef51133ceccf",
+    "https://deno.land/std@0.221.0/path/_common/glob_to_reg_exp.ts": "6cac16d5c2dc23af7d66348a7ce430e5de4e70b0eede074bdbcf4903f4374d8d",
+    "https://deno.land/std@0.221.0/path/_common/normalize.ts": "684df4aa71a04bbcc346c692c8485594fc8a90b9408dfbc26ff32cf3e0c98cc8",
+    "https://deno.land/std@0.221.0/path/_common/normalize_string.ts": "33edef773c2a8e242761f731adeb2bd6d683e9c69e4e3d0092985bede74f4ac3",
+    "https://deno.land/std@0.221.0/path/_common/relative.ts": "faa2753d9b32320ed4ada0733261e3357c186e5705678d9dd08b97527deae607",
+    "https://deno.land/std@0.221.0/path/_common/strip_trailing_separators.ts": "7024a93447efcdcfeaa9339a98fa63ef9d53de363f1fbe9858970f1bba02655a",
+    "https://deno.land/std@0.221.0/path/_common/to_file_url.ts": "7f76adbc83ece1bba173e6e98a27c647712cab773d3f8cbe0398b74afc817883",
+    "https://deno.land/std@0.221.0/path/_interface.ts": "8dfeb930ca4a772c458a8c7bbe1e33216fe91c253411338ad80c5b6fa93ddba0",
+    "https://deno.land/std@0.221.0/path/_os.ts": "8fb9b90fb6b753bd8c77cfd8a33c2ff6c5f5bc185f50de8ca4ac6a05710b2c15",
+    "https://deno.land/std@0.221.0/path/basename.ts": "7ee495c2d1ee516ffff48fb9a93267ba928b5a3486b550be73071bc14f8cc63e",
+    "https://deno.land/std@0.221.0/path/common.ts": "03e52e22882402c986fe97ca3b5bb4263c2aa811c515ce84584b23bac4cc2643",
+    "https://deno.land/std@0.221.0/path/constants.ts": "0c206169ca104938ede9da48ac952de288f23343304a1c3cb6ec7625e7325f36",
+    "https://deno.land/std@0.221.0/path/dirname.ts": "85bd955bf31d62c9aafdd7ff561c4b5fb587d11a9a5a45e2b01aedffa4238a7c",
+    "https://deno.land/std@0.221.0/path/extname.ts": "593303db8ae8c865cbd9ceec6e55d4b9ac5410c1e276bfd3131916591b954441",
+    "https://deno.land/std@0.221.0/path/format.ts": "6ce1779b0980296cf2bc20d66436b12792102b831fd281ab9eb08fa8a3e6f6ac",
+    "https://deno.land/std@0.221.0/path/from_file_url.ts": "911833ae4fd10a1c84f6271f36151ab785955849117dc48c6e43b929504ee069",
+    "https://deno.land/std@0.221.0/path/glob_to_regexp.ts": "7f30f0a21439cadfdae1be1bf370880b415e676097fda584a63ce319053b5972",
+    "https://deno.land/std@0.221.0/path/is_absolute.ts": "4791afc8bfd0c87f0526eaa616b0d16e7b3ab6a65b62942e50eac68de4ef67d7",
+    "https://deno.land/std@0.221.0/path/is_glob.ts": "a65f6195d3058c3050ab905705891b412ff942a292bcbaa1a807a74439a14141",
+    "https://deno.land/std@0.221.0/path/join.ts": "ae2ec5ca44c7e84a235fd532e4a0116bfb1f2368b394db1c4fb75e3c0f26a33a",
+    "https://deno.land/std@0.221.0/path/join_globs.ts": "5b3bf248b93247194f94fa6947b612ab9d3abd571ca8386cf7789038545e54a0",
+    "https://deno.land/std@0.221.0/path/mod.ts": "2821a1bb3a4148a0ffe79c92aa41aa9319fef73c6d6f5178f52b2c720d3eb02d",
+    "https://deno.land/std@0.221.0/path/normalize.ts": "4155743ccceeed319b350c1e62e931600272fad8ad00c417b91df093867a8352",
+    "https://deno.land/std@0.221.0/path/normalize_glob.ts": "cc89a77a7d3b1d01053b9dcd59462b75482b11e9068ae6c754b5cf5d794b374f",
+    "https://deno.land/std@0.221.0/path/parse.ts": "3e172974e3c71025f5fbd2bd9db4307acb9cc2de14cf6f4464bf40957663cabe",
+    "https://deno.land/std@0.221.0/path/posix/_util.ts": "1e3937da30f080bfc99fe45d7ed23c47dd8585c5e473b2d771380d3a6937cf9d",
+    "https://deno.land/std@0.221.0/path/posix/basename.ts": "d2fa5fbbb1c5a3ab8b9326458a8d4ceac77580961b3739cd5bfd1d3541a3e5f0",
+    "https://deno.land/std@0.221.0/path/posix/common.ts": "26f60ccc8b2cac3e1613000c23ac5a7d392715d479e5be413473a37903a2b5d4",
+    "https://deno.land/std@0.221.0/path/posix/constants.ts": "93481efb98cdffa4c719c22a0182b994e5a6aed3047e1962f6c2c75b7592bef1",
+    "https://deno.land/std@0.221.0/path/posix/dirname.ts": "76cd348ffe92345711409f88d4d8561d8645353ac215c8e9c80140069bf42f00",
+    "https://deno.land/std@0.221.0/path/posix/extname.ts": "e398c1d9d1908d3756a7ed94199fcd169e79466dd88feffd2f47ce0abf9d61d2",
+    "https://deno.land/std@0.221.0/path/posix/format.ts": "185e9ee2091a42dd39e2a3b8e4925370ee8407572cee1ae52838aed96310c5c1",
+    "https://deno.land/std@0.221.0/path/posix/from_file_url.ts": "951aee3a2c46fd0ed488899d024c6352b59154c70552e90885ed0c2ab699bc40",
+    "https://deno.land/std@0.221.0/path/posix/glob_to_regexp.ts": "76f012fcdb22c04b633f536c0b9644d100861bea36e9da56a94b9c589a742e8f",
+    "https://deno.land/std@0.221.0/path/posix/is_absolute.ts": "cebe561ad0ae294f0ce0365a1879dcfca8abd872821519b4fcc8d8967f888ede",
+    "https://deno.land/std@0.221.0/path/posix/is_glob.ts": "8a8b08c08bf731acf2c1232218f1f45a11131bc01de81e5f803450a5914434b9",
+    "https://deno.land/std@0.221.0/path/posix/join.ts": "7fc2cb3716aa1b863e990baf30b101d768db479e70b7313b4866a088db016f63",
+    "https://deno.land/std@0.221.0/path/posix/join_globs.ts": "a9475b44645feddceb484ee0498e456f4add112e181cb94042cdc6d47d1cdd25",
+    "https://deno.land/std@0.221.0/path/posix/mod.ts": "2301fc1c54a28b349e20656f68a85f75befa0ee9b6cd75bfac3da5aca9c3f604",
+    "https://deno.land/std@0.221.0/path/posix/normalize.ts": "baeb49816a8299f90a0237d214cef46f00ba3e95c0d2ceb74205a6a584b58a91",
+    "https://deno.land/std@0.221.0/path/posix/normalize_glob.ts": "9c87a829b6c0f445d03b3ecadc14492e2864c3ebb966f4cea41e98326e4435c6",
+    "https://deno.land/std@0.221.0/path/posix/parse.ts": "0b1fc4cb890dbb699ec1d2c232d274843b4a7142e1ad976b69fe51c954eb6080",
+    "https://deno.land/std@0.221.0/path/posix/relative.ts": "3907d6eda41f0ff723d336125a1ad4349112cd4d48f693859980314d5b9da31c",
+    "https://deno.land/std@0.221.0/path/posix/resolve.ts": "08b699cfeee10cb6857ccab38fa4b2ec703b0ea33e8e69964f29d02a2d5257cf",
+    "https://deno.land/std@0.221.0/path/posix/to_file_url.ts": "7aa752ba66a35049e0e4a4be5a0a31ac6b645257d2e031142abb1854de250aaf",
+    "https://deno.land/std@0.221.0/path/posix/to_namespaced_path.ts": "28b216b3c76f892a4dca9734ff1cc0045d135532bfd9c435ae4858bfa5a2ebf0",
+    "https://deno.land/std@0.221.0/path/relative.ts": "ab739d727180ed8727e34ed71d976912461d98e2b76de3d3de834c1066667add",
+    "https://deno.land/std@0.221.0/path/resolve.ts": "a6f977bdb4272e79d8d0ed4333e3d71367cc3926acf15ac271f1d059c8494d8d",
+    "https://deno.land/std@0.221.0/path/to_file_url.ts": "88f049b769bce411e2d2db5bd9e6fd9a185a5fbd6b9f5ad8f52bef517c4ece1b",
+    "https://deno.land/std@0.221.0/path/to_namespaced_path.ts": "b706a4103b104cfadc09600a5f838c2ba94dbcdb642344557122dda444526e40",
+    "https://deno.land/std@0.221.0/path/windows/_util.ts": "d5f47363e5293fced22c984550d5e70e98e266cc3f31769e1710511803d04808",
+    "https://deno.land/std@0.221.0/path/windows/basename.ts": "6bbc57bac9df2cec43288c8c5334919418d784243a00bc10de67d392ab36d660",
+    "https://deno.land/std@0.221.0/path/windows/common.ts": "26f60ccc8b2cac3e1613000c23ac5a7d392715d479e5be413473a37903a2b5d4",
+    "https://deno.land/std@0.221.0/path/windows/constants.ts": "5afaac0a1f67b68b0a380a4ef391bf59feb55856aa8c60dfc01bd3b6abb813f5",
+    "https://deno.land/std@0.221.0/path/windows/dirname.ts": "33e421be5a5558a1346a48e74c330b8e560be7424ed7684ea03c12c21b627bc9",
+    "https://deno.land/std@0.221.0/path/windows/extname.ts": "165a61b00d781257fda1e9606a48c78b06815385e7d703232548dbfc95346bef",
+    "https://deno.land/std@0.221.0/path/windows/format.ts": "bbb5ecf379305b472b1082cd2fdc010e44a0020030414974d6029be9ad52aeb6",
+    "https://deno.land/std@0.221.0/path/windows/from_file_url.ts": "ced2d587b6dff18f963f269d745c4a599cf82b0c4007356bd957cb4cb52efc01",
+    "https://deno.land/std@0.221.0/path/windows/glob_to_regexp.ts": "e45f1f89bf3fc36f94ab7b3b9d0026729829fabc486c77f414caebef3b7304f8",
+    "https://deno.land/std@0.221.0/path/windows/is_absolute.ts": "4a8f6853f8598cf91a835f41abed42112cebab09478b072e4beb00ec81f8ca8a",
+    "https://deno.land/std@0.221.0/path/windows/is_glob.ts": "8a8b08c08bf731acf2c1232218f1f45a11131bc01de81e5f803450a5914434b9",
+    "https://deno.land/std@0.221.0/path/windows/join.ts": "8d03530ab89195185103b7da9dfc6327af13eabdcd44c7c63e42e27808f50ecf",
+    "https://deno.land/std@0.221.0/path/windows/join_globs.ts": "a9475b44645feddceb484ee0498e456f4add112e181cb94042cdc6d47d1cdd25",
+    "https://deno.land/std@0.221.0/path/windows/mod.ts": "2301fc1c54a28b349e20656f68a85f75befa0ee9b6cd75bfac3da5aca9c3f604",
+    "https://deno.land/std@0.221.0/path/windows/normalize.ts": "78126170ab917f0ca355a9af9e65ad6bfa5be14d574c5fb09bb1920f52577780",
+    "https://deno.land/std@0.221.0/path/windows/normalize_glob.ts": "9c87a829b6c0f445d03b3ecadc14492e2864c3ebb966f4cea41e98326e4435c6",
+    "https://deno.land/std@0.221.0/path/windows/parse.ts": "dbdfe2bc6db482d755b5f63f7207cd019240fcac02ad2efa582adf67ff10553a",
+    "https://deno.land/std@0.221.0/path/windows/relative.ts": "3e1abc7977ee6cc0db2730d1f9cb38be87b0ce4806759d271a70e4997fc638d7",
+    "https://deno.land/std@0.221.0/path/windows/resolve.ts": "8dae1dadfed9d46ff46cc337c9525c0c7d959fb400a6308f34595c45bdca1972",
+    "https://deno.land/std@0.221.0/path/windows/to_file_url.ts": "40e560ee4854fe5a3d4d12976cef2f4e8914125c81b11f1108e127934ced502e",
+    "https://deno.land/std@0.221.0/path/windows/to_namespaced_path.ts": "4ffa4fb6fae321448d5fe810b3ca741d84df4d7897e61ee29be961a6aac89a4c",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/consumer.ts": "ad35915a32b2514465ad92a249aa3ee492f8371cf9f0d5e786f5a35601e488d5",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsapi_types.ts": "5307a427d31369d5b3d0687ad09b55ac5fc3cd346b3886f6ebaea377835d2f4c",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsbaseclient_api.ts": "d94b3a069d6bb9a7346c5bea70ee057950ff582b2b0303e46152fe6f8176878f",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsclient.ts": "a01eb29ab6756b2f2c8f7c38e955757615da4861e7afec709c5058a7cd8677c5",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jslister.ts": "15bf52f70fdce615619fb58688afc931722827633d7256f97012142c4ce923e3",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsm.ts": "32ad56bf2b812009389479be719508e8fbb6d8d8e92699220178c8eeb188f62f",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsmconsumer_api.ts": "97d805219ea92446a328263d5472832f55949f15520f2c93c94566c0550e2605",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsmsg.ts": "c0ddb900ebe5c9c12b47ad6e731dc00b3774907d9c3c340911c1bc56e0490803",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsmstream_api.ts": "52d94a28089974a4006b8c22a72148842649d935b8d3f2b6c4b4cbc9d96954b0",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/jsutil.ts": "2bf246f1d3d15cd804ad062f08e7e0871ebbebb25c191b305c454bf4513c96af",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/kv.ts": "1ffca29f80cbb3a6a301b22d978275198f0a069a01c4840a285936c9d517408d",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/objectstore.ts": "b7acecdf6dba62f880ce4b857d34eab0fca058ce6763ae4d5f2a1764ec0faf80",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/jetstream/types.ts": "c1a78f68cf8f586c6fe51096cab66811bb52dc671869112b54e73f171e5e6a64",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/authenticator.ts": "9cbfef9352748917ceada487e1ee44d91f55cd5e51d3a74577d99c77d8456d02",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/base64.ts": "c031bf9f8ac451f2e50c44a3b2f9ff564d61bb14c51834ce73db837e1dee432b",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/bench.ts": "9bfc16649a48228953255d2d3819b86a076ebe7cbdcccf0bbfb30089aa759631",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/codec.ts": "da86654fb1f52766b998bbe22f28aa3bd3bfe6098f4d03a364999b75d522c551",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/core.ts": "b76c870e3ce5edc2d12a538c25d441639fe5f3cd2c47e4bc5f841c900498255f",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/databuffer.ts": "4f92f772ca6701d15f2d148d2d34543558d458b20014d0404f605f84b747b75f",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/denobuffer.ts": "83686bd747953167824694a3f4882ed7134a4fe70b3af89b65b41c284bc0c06a",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/encoders.ts": "223f9a203d4540d3df1f219b7a93f7a04e94a4ee8b5609ce99317e25b11cdbcf",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/headers.ts": "ad4f78316978672476e1eb9b72859539d65388569854a9c1fab447f3fc0c2b58",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/heartbeats.ts": "ae28515ee032f9bfc391809c146b85f5d59b9acc56d9c83a7222acfa0d2fe019",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/idleheartbeat_monitor.ts": "7f5f02723130ad47e93eb820454f4451e20fd3cc09f030c152017e05a37c010c",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/internal_mod.ts": "cf51646260ab49d822062dc6c443fe874757d6c1314105ec71267fecd9111dd5",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/ipparser.ts": "eced7163655be5bb457f9a3a5880239131996e3ae7d7817db88c156faa42d29f",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/mod.ts": "2974c00cb3794e1b383222bc63ffabff1b2de531dd0da9bde85104da797bc00e",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/msg.ts": "89dc0f6502ae8692e95c937a997821b80fb5d3c4538d922f149ffdd871cdcf6e",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/muxsubscription.ts": "07ce9bf83c11f4e1e1e927cdaaaabbb07929af18ee024ca9e462650009e31d74",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/nats.ts": "2db45c14924d8cdd07def38b01fbdf79969e411fd16dd456a4087103d2c63e73",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/nkeys.ts": "01aa92908831dd3baad8dbc0e1b3eb05c7b8532a96f799244ff5da16aaee8e69",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/nuid.ts": "796710eb4987ef97a4b711668a37b66de26208562fd89be76d54f986393ebc48",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/options.ts": "a09d1e9c987517f85a25d2fd213779ed3ae8f66760810e5f8d022d7cd83add43",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/parser.ts": "841c14dab3ba248f839cd14574e2249a5e98acc75e105ecdc4242501ef2b9f5a",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/protocol.ts": "a4854afb37cff4cc3532b605e5d3c313e081f783f02b5c07a069d2506c2740a4",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/queued_iterator.ts": "bc11bc6fe28b1c9929c4326f3a3bfe4deec56a26c626ba7578c93670380b51d2",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/request.ts": "6432db28e9177f24be0cdec5a9bf6181e95a3c7c26691156fa7906e593a5372d",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/semver.ts": "ef6b048113ad29d39e653d5dd2e0e535e519320f9cc5076f747736dc13631919",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/servers.ts": "bccb4f083fad47b90168f5c50e45d024137a2767b456db0d41a5e64c10d54ee4",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/service.ts": "8c1d834e5bac32038ebcc72e4870c1ff75cf55b4be6a4d6b96435df5865de0c6",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/serviceclient.ts": "8110c8b3d4b21baf43f8d1b12e7f245eef51408d1406e343403764e28e8e505d",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/sha256.js": "87a436302eafacfea9600cf0276245f39d13718c4cbaa81daff47af4ea6523fd",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/transport.ts": "645996427e586083bac2155d48134306b07ad6baca014fa6a78ee1feb69c9366",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/typedsub.ts": "b5f0c5f270975a6425c6467719ecd5caf538fe0eaafc2c12abc73fd7a577c3e1",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/types.ts": "fa9f61b492fffb153ae794a41b19c89094f988c4eb79ff98211fd367eb70c385",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/nats-base-client/util.ts": "44aadae8c3ce5b04a0f5085ca8e07a55380b75312bbf641e1b6f9c39db17981f",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/src/connect.ts": "117abbed3b942555451e5adf31befd34ee64aa2b12e36688cb11fb9c7e69c221",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/src/deno_transport.ts": "400db2042c888d2ba4fd05f7862ef9916d8c892371ffc2f188a3b701085d38fd",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/tests/helpers/asserts.ts": "34a69f8657a21acfcd30dc56c215380136dfe692ad6ceb48444a4dca7e0d2523",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/tests/helpers/check.ts": "539eea8f1bc811dd9de036f757c87cb2f7dbf0172b4c94b5036dd08ae7128e21",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/tests/helpers/launcher.ts": "64c6a2314b0efcebe67bd38aaa1c61f727e0e7a2646ae758987f9a90fd90d715",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/tests/helpers/lock.ts": "fcac7a63fe4b3a9e859507cc659257b622df6f85f7c864562068b41cb4093d77",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/tests/helpers/mod.ts": "e2bd7ac9c559ee76b6bee574b7ae447e3cb1d17d3068a911797fed4a63fa94d4",
+    "https://raw.githubusercontent.com/nats-io/nats.deno/main/tests/helpers/test_server.ts": "a5ccc1b0f5cbac614d3f7087789319b7e3c143ce46ea1879a930ddabc76f22c3",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/authenticator.ts": "648ce284b397eb19cd819a75b736fd05f0cdfc3daa69eedb5fb41f6011da477f",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/base64.ts": "c031bf9f8ac451f2e50c44a3b2f9ff564d61bb14c51834ce73db837e1dee432b",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/bench.ts": "63b4e5a0f9fe24bede3a073960e2d87529e7e60534dc38a324e0ebeaf831e226",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/codec.ts": "e11b29a79131bfad4df4f2c7ec932fca575b7c75ca97512564267614e41e42ca",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/core.ts": "4a96ede156d7334952ed7f8ba4a5e0e32e0f975fcd9fb5e4f3d1796cbaea4765",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/databuffer.ts": "4f92f772ca6701d15f2d148d2d34543558d458b20014d0404f605f84b747b75f",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/denobuffer.ts": "83686bd747953167824694a3f4882ed7134a4fe70b3af89b65b41c284bc0c06a",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/encoders.ts": "342c34480a59f221fbb33a15d63faf979c0467c188c28e653323aa2e46aed9a5",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/headers.ts": "b3a738acce86724fa50f39cd56b65762e7c86c322dc8ddcc84e096f8821267db",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/heartbeats.ts": "8bff7bb9ab935b3907f03344f33aabb7e9f2d709af17d287612935868ecf55f3",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/idleheartbeat_monitor.ts": "7f5f02723130ad47e93eb820454f4451e20fd3cc09f030c152017e05a37c010c",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/internal_mod.ts": "c0f2b5c0228861ae8cc9e168889e3febcaf4ec2c38f396edea0f9d944c278d88",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/ipparser.ts": "080cd741f704cef1a3b8da4c91bb7c04b202e14df44b3530ae03789681248247",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/mod.ts": "2e66e07e1e63cbf6bd7f70f8d50b603650502b1bff5b516b770faa718a1685ad",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/msg.ts": "e5b079510624719f5582906a8b1661d1b168a293a88f9e58159cf9cc0056e722",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/muxsubscription.ts": "304750c3c53f25084e4e161ad4c44ba1876f329d8861383f0ebbbc612e9ec385",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/nats.ts": "2f4413a77b08cb502b06929d0b938479ec0c2c42dcd8322545ffc9d3e3df9211",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/nkeys.ts": "b337372c6404411f7e838c07f895331bcfc25a66717298c7b16af56986fbc74d",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/nuid.ts": "75b75bcaf2a71caffb789103ab287f1a9c7da0a70c3d7376480ae1bb21f0bdcf",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/options.ts": "3c253bfceefaa19ed41459736a50afd7a78e646e16a6f79ef8545d4a01401b12",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/parser.ts": "4dfcb570929195fbf9550b17c755c8c192827e6c583f49bc00a8a97920005d66",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/protocol.ts": "2ff64480aa2a43f310520a2f325629695b6fdeb2641577ff7040ba818a45969f",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/queued_iterator.ts": "4abe00ea33409bc766060bf752092a03668ceef7856efe1171eecaae1f903927",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/request.ts": "f49653ec637353cfe0152bdf7b9363dd4cc7682c48a8a2019c9c7a09720e0b54",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/semver.ts": "150a46a9a4c714fc16c14355b7fe02fa75ec64c88c47449ec6ec247d7b2c0242",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/servers.ts": "4ef11799c75897cccada61f39a832be4685514b5bae1d14ef4c96986eab773be",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/sha256.ts": "1ed0ea4ed828d58256d03007b5a7ae05137380f5093539d36f103cb28da88990",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/transport.ts": "329bf4f9442b15ffbfbf67e51de5488624453d035cc7b39873f070708e5b6482",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/typedsub.ts": "c019479dae805d08c0db3be369af8e018aa997d1ad44621357a6f626f9943a16",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/types.ts": "89ae775408930e458ad4cf8731362a34faa702c06e5621c384f0d2cec08c5acb",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/util.ts": "7ddd322698c39eecb622889cc528975cd84fa44024c95400ed4740d7cc598e17",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/version.ts": "65a18b664a806ab75cac414f4ab04be63e95d1b89c402c315b46743f80dacd35",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/core/src/ws_transport.ts": "c262c82a4f77c2c74068567df02d554934e7053337f707d549d2089861a5b67b",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/asserts.ts": "1c3b4732e01bf7d088ffc3a2a81c878e0edc214e83f9b8175213d7ed1bcc486e",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/certs.json": "96c191e270ea19ec7c2c11464c26bfe7ffd3ce4aedd20187c20fcd26b479fe24",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/certs.ts": "f6ca719322acbc5ecde35b1e7acfdb118d269e1c03e81ecbe041cc157b30c127",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/check.ts": "539eea8f1bc811dd9de036f757c87cb2f7dbf0172b4c94b5036dd08ae7128e21",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/connect.ts": "daa34df52e2c29f224857c815b4620c0d465effc9cc0b0d5c7998f3350405f5c",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/launcher.ts": "bceda7fda7998f7da1cced7d9a97f48635821acf931bfbde5559b4471cc68f44",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/lock.ts": "fcac7a63fe4b3a9e859507cc659257b622df6f85f7c864562068b41cb4093d77",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/mod.ts": "970cbbecb680ddde4988007956ebfb515347fba60fe8b3184a5d2e6464420bc4",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/test_helpers/test_server.ts": "b8fe432737b5453b9125886d5c7db2191c88d246095f5d928409fec91ec19b77",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/transport-deno/src/connect.ts": "f6d75e15449615f681f287800a04c5670e4beda348500cb671a32d2afa2991e4",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/transport-deno/src/deno_transport.ts": "56d25e5df0d70fc3aa95cb8eaf7d985e2a7f6300250d2990bb73891b92d11101",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/transport-deno/src/mod.ts": "4674358caf8db52a87116a5fbfce77d52f2f30b3fbf1d0d97ba7c656026a2973",
+    "https://raw.githubusercontent.com/nats-io/nats.js/main/transport-deno/src/version.ts": "2bf4c7d015ea17bc863846a628433c23b28ec0528805105a6525685c19da1087",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/modules/esm/deps.ts": "38d8dcfc3ca0b7429532477127719affa0da04824610e2a1069f9f935032894f",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/modules/esm/mod.ts": "43c3fbbad0244dde7ae229e778dbefba7f28955a7ff5257d4ed1635b5576fb31",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/modules/esm/nacl.js": "251e4ffcd6d2c56c7773bcf8c1549e9c07b32adb7a2156908a04930a52e614de",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/base32.ts": "07cbfd2551cf1ef4e45784058f7583495354a167c17a75b6cbdbf6b11d91c235",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/codec.ts": "23a574d4c7e4059c503992d6cb8ab0aa5c518f52848c4599ce04049a75f8e8ee",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/crc16.ts": "0290d486579668a79602cef211a28038630e685147e8ddf79b32ff41a871cfdd",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/helper.ts": "8c4121b879ac5d0d4e05b227e15a7e29057642282f020d49de36ca3c33b7d1ed",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/kp.ts": "360259ef2bea8ee65c8fce04efb4b5aaff14382d155c0668c131d959ef9098bb",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/mod.ts": "467181195143688f969a8d1f106e4d5064116d4736a77347f681c2a6c010ede4",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/nkeys.ts": "ef6d234c2661598f39dd30f68b83be1ba84e6f89b851ffaabfad5128917cd8f3",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/public.ts": "b5c893dad5ec139296bcaec6ea11ab4cb06da4f6978e05ff9c37f7d17a7c6101",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/util.ts": "96c4c8f707ef6aaa00c23527d0a7b935efe1df3dd94e6d40707e37c5e0f14e27"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@nats-io/jwt@^0.0.10-5",
+      "jsr:@nats-io/nats-core@^3.0.0-25",
+      "jsr:@nats-io/nkeys@^1.2.0-4",
+      "jsr:@nats-io/nuid@^2.0.0",
+      "jsr:@nats-io/services@^3.0.0-1",
+      "jsr:@nats-io/transport-deno@^3.0.0-6",
+      "jsr:@std/assert@^1.0.2",
+      "jsr:@std/io@^0.224.5"
+    ]
+  }
+}
