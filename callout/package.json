@@ -1,0 +1,31 @@
+{
+  "name": "callout",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "real-clean": "npm run clean && shx rm -Rf ./node_modules",
+    "clean": "shx rm -Rf ./build ./lib",
+    "pre-process": "npm run clean && deno run -A ./bin/cjs-fix-imports.ts -o ./build/src ./src",
+    "build-cjs": "npm run pre-process && tsc",
+    "build": "npm run build-cjs",
+    "doc": "npm run build && node_modules/.bin/typedoc --out ../docs/jetstream && touch ../docs/jetstream/.nojekyll",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com//synadia-io/orbit.js"
+  },
+  "private": true,
+  "dependencies": {
+    "@nats-io/jwt": "^0.0.10-8",
+    "@nats-io/services": "^3.0.0-2",
+    "@nats-io/transport-node": "^3.0.0-6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "shx": "^0.3.4",
+    "typedoc": "^0.26.5",
+    "typescript": "^5.5.4"
+  }
+}

@@ -12,20 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as ts from "test_helpers";
 import * as jwt from "@nats-io/jwt";
 import { authorizationService, Authorizer } from "../src/mod.ts";
+import * as ts from "test_helpers";
 import { connect } from "@nats-io/transport-deno";
-import { assertArrayIncludes, assertEquals } from "@std/assert";
+import {
+  assertArrayIncludes,
+  assertEquals,
+  assertRejects,
+  fail,
+} from "@std/assert";
 
+// the key to sign accounts
 const accountA: jwt.Key =
   "SAAGNWU5END33QMSWG3LGWDBQLHYGC4OBIC7KUDZXQIX7ZHUCAOG3XTO2U";
 
-const serverK: jwt.Key =
+const encryptionKey: jwt.Key =
   "SXAEEYAJLBNS5M7ZVCCEPTLGBDWWYB3P6ESAPPMZRXAO7TICBTPCA5442Y";
 
-Deno.test("conf", async () => {
+Deno.test("encrypted conf", async () => {
+  const xkp = jwt.checkKey(encryptionKey, "X", true);
   const akp = jwt.checkKey(accountA, "A", true);
 
   // this is an example of a server configuration that uses the
@@ -41,6 +47,9 @@ Deno.test("conf", async () => {
       timeout: "2s",
       users: [{ user: "auth", password: "pwd" }],
       auth_callout: {
+        // this is the public xkey of the request recipient - the server
+        // encrypts request for this identity using this xkey
+        xkey: xkp.getPublicKey(),
         issuer: akp.getPublicKey(),
         // the user `auth` will provide credentials, and will not be sent
         // to the auth callout service as it is the auth callout user.
@@ -49,16 +58,18 @@ Deno.test("conf", async () => {
     },
   };
 
-  const { ns, nc } = await ts.setup(conf, {
-    user: "auth",
-    pass: "pwd",
-  });
+  const ns = await ts.NatsServer.start(conf, true);
+  const nc = await connect({ port: ns.port, user: "auth", pass: "pwd" });
 
   // Here's an example of the Authorizer, it simply crafts a JWT.
-  class ConfAuthorizer implements Authorizer {
+  class EncryptedAuthorizer implements Authorizer {
     async authorize(
       req: jwt.AuthorizationRequest,
     ): Promise<Partial<jwt.AuthorizationResponse>> {
+      // by the time we get a request here, the server already unpacked and verified
+      // that the request was encrypted for us by the server that sent and encrypted
+      // the message. Similarly, the response we send out, is encrypted by the service
+      // using the key that is specified for the server that sent the request.
       try {
         // inspect the request however necessary - in this case just a simple
         // test for username and password
@@ -104,7 +115,13 @@ Deno.test("conf", async () => {
   // it will then package the returned response from the authorizer into
   // a JWT which is signed with the account key (in case of conf, same signer)
   // and return it to the NATS server
-  const service = await authorizationService(nc, new ConfAuthorizer(), akp);
+  const service = await authorizationService(
+    nc,
+    new EncryptedAuthorizer(),
+    akp,
+    // here's our encryption key
+    xkp,
+  );
 
   const nc2 = await connect({
     port: ns.port,
@@ -125,4 +142,123 @@ Deno.test("conf", async () => {
   await service.stop();
 
   await ts.cleanup(ns, nc, nc2);
+});
+
+Deno.test("server defines xkey", async () => {
+  const xkp = jwt.checkKey(encryptionKey, "X", true);
+  const akp = jwt.checkKey(accountA, "A", true);
+
+  const conf = {
+    accounts: {
+      "B": {},
+    },
+    authorization: {
+      timeout: "2s",
+      users: [{ user: "auth", password: "pwd" }],
+      auth_callout: {
+        // we set an xkey so server encrypts
+        xkey: xkp.getPublicKey(),
+        issuer: akp.getPublicKey(),
+        // the user `auth` will provide credentials, and will not be sent
+        // to the auth callout service as it is the auth callout user.
+        auth_users: ["auth"],
+      },
+    },
+  };
+
+  const ns = await ts.NatsServer.start(conf, true);
+  const nc = await connect({ port: ns.port, user: "auth", pass: "pwd" });
+
+  // requests shouldn't get to the authorizer
+  class EncryptedAuthorizer implements Authorizer {
+    authorize(
+      _: jwt.AuthorizationRequest,
+    ): Promise<Partial<jwt.AuthorizationResponse>> {
+      fail("shouldn't have been called");
+    }
+  }
+
+  // the service doesn't specify an xkey, which should make the request fail
+  // by the service handler
+  const service = await authorizationService(
+    nc,
+    new EncryptedAuthorizer(),
+    akp,
+  );
+
+  await assertRejects(
+    () => {
+      return connect({
+        port: ns.port,
+        user: "b",
+        pass: "hello",
+        reconnect: false,
+        maxReconnectAttempts: 0,
+      });
+    },
+    Error,
+    "'Authorization Violation'",
+  );
+
+  await service.stop();
+  await ts.cleanup(ns, nc);
+});
+
+Deno.test("service defines xkey", async () => {
+  const xkp = jwt.checkKey(encryptionKey, "X", true);
+  const akp = jwt.checkKey(accountA, "A", true);
+
+  const conf = {
+    accounts: {
+      "B": {},
+    },
+    authorization: {
+      timeout: "2s",
+      users: [{ user: "auth", password: "pwd" }],
+      auth_callout: {
+        issuer: akp.getPublicKey(),
+        // the user `auth` will provide credentials, and will not be sent
+        // to the auth callout service as it is the auth callout user.
+        auth_users: ["auth"],
+      },
+    },
+  };
+
+  const ns = await ts.NatsServer.start(conf, true);
+  const nc = await connect({ port: ns.port, user: "auth", pass: "pwd" });
+
+  // requests shouldn't get to the authorizer
+  class EncryptedAuthorizer implements Authorizer {
+    authorize(
+      _: jwt.AuthorizationRequest,
+    ): Promise<Partial<jwt.AuthorizationResponse>> {
+      fail("shouldn't have been called");
+    }
+  }
+
+  // the service specifies an xkey, but server doesn't
+  const service = await authorizationService(
+    nc,
+    new EncryptedAuthorizer(),
+    akp,
+    // server doesn't define it so it should fail
+    xkp,
+  );
+
+  await assertRejects(
+    () => {
+      return connect({
+        port: ns.port,
+        user: "b",
+        pass: "hello",
+        reconnect: false,
+        maxReconnectAttempts: 0,
+      });
+    },
+    Error,
+    "'Authorization Violation'",
+  );
+
+  await service.stop();
+  await ts.cleanup(ns, nc);
 });
