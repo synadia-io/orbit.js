@@ -23,6 +23,7 @@ const nc = await connect({
     certFile: "./certs/client-id-auth-cert.pem",
     keyFile: "./certs/client-id-auth-key.pem",
     caFile: "./certs/ca.pem",
+    handshakeFirst: true,
   },
 });
 

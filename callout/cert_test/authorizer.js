@@ -31,8 +31,11 @@ const nc = await connect({
     certFile: "./certs/client-cert.pem",
     keyFile: "./certs/client-key.pem",
     caFile: "./certs/ca.pem",
+    handshakeFirst: true,
   },
 });
+
+console.log("connected");
 
 function describeCert(s) {
   const cc = new x509.X509Certificate(s);

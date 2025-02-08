@@ -41,6 +41,14 @@ export interface Authorizer {
 const NatsServerXkeyHeader = "Nats-Server-Xkey";
 const ExpectedAudience = "nats-authorization-request";
 
+// FIXME: need to handle ability to use signing key - see the go implementation
+export type Keys = {
+  responseSigner: KeyPair|jwt.Key,
+  responseSignerIssuer?: KeyPair|jwt.Key,
+  encryptionKey?: KeyPair|jwt.Key
+}
+
+
 /**
  * Creates a NATS service that processes authorization requests.
  *
