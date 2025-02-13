@@ -1,0 +1,18 @@
+{
+  "name": "@synadiaorbit/opts",
+  "version": "1.0.0-1",
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "publish": {
+    "exclude": ["./examples"]
+  },
+  "tasks": {
+    "clean": "rm -Rf ./coverage",
+    "test": "deno task clean & deno test --allow-all --parallel --reload --quiet --coverage=coverage",
+    "cover": "deno coverage  ./coverage --lcov > ./coverage/out.lcov && genhtml -o ./coverage/html ./coverage/out.lcov && open ./coverage/html/index.html"
+  },
+  "imports": {
+    "@nats-io/nats-core": "jsr:@nats-io/nats-core@^3.0.0-50"
+  }
+}
