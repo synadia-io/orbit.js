@@ -14,7 +14,6 @@
  */
 
 import type { ConnectionOptions } from "@nats-io/nats-core";
-import { wsconnect } from "@nats-io/nats-core";
 
 type ConnectionProperty = Omit<
   keyof ConnectionOptions & { creds: string },
@@ -31,9 +30,9 @@ const booleanProps = [
   "pedantic",
   "reconnect",
   "resolve",
-  "tls",
   "verbose",
   "waitOnFirstConnect",
+  "handshakeFirst",
 ] as const;
 
 const numberProps = [
@@ -43,21 +42,88 @@ const numberProps = [
   "reconnectJitter",
   "reconnectJitterTLS",
   "reconnectTimeWait",
-  "port",
   "timeout",
 ] as const;
 
 const stringProps = [
   "name",
-  "pass",
-  "token",
-  "user",
   "inboxPrefix",
 ] as const;
 const arrayProps = ["servers"] as const;
 
+const tlsBooleanProps = [
+  "handshakeFirst",
+];
+
+const tlsStringProps = [
+  "cert",
+  "certFile",
+  "ca",
+  "caFile",
+  "key",
+  "keyFile",
+];
+
+function encodeStringPropsFn(src: Record<string, unknown>, target: URL) {
+  return (n: string) => {
+    const v = src[n] as string | undefined;
+    if (v) {
+      target.searchParams.append(n, encodeURIComponent(v));
+    }
+  };
+}
+
+function encodeBooleanPropsFn(src: Record<string, unknown>, target: URL) {
+  return (n: string) => {
+    const v = src[n] as boolean | undefined;
+    if (typeof v === "boolean") {
+      target.searchParams.append(n, v ? "true" : "false");
+    }
+  };
+}
+
+function encodeNumberPropsFn(src: Record<string, unknown>, target: URL) {
+  return (n: string) => {
+    const v = src[n] as number | undefined;
+    if (typeof v === "number") {
+      target.searchParams.append(n, v.toString());
+    }
+  };
+}
+
 export function encode(opts: Partial<ConnectionOptions>): string {
-  const u = new URL("http://nothing:80");
+  if (typeof opts?.servers === "string") {
+    opts.servers = [opts.servers];
+  }
+  let u: URL;
+  if (opts?.servers?.length) {
+    if (
+      opts.servers[0].startsWith("wss://") ||
+      opts.servers[0].startsWith("ws://")
+    ) {
+      u = new URL(opts.servers[0]);
+    } else {
+      u = new URL(`nats://${opts.servers[0]}`);
+    }
+    // remove this server from the list as it is part of the URL
+    opts.servers = opts.servers.slice(1);
+  } else {
+    u = new URL("nats://127.0.0.1:4222");
+  }
+  if (opts.port) {
+    u.port = `${opts.port}`;
+  }
+
+  if (opts.user) {
+    u.username = opts.user;
+  }
+  if (opts.pass) {
+    u.password = opts.pass;
+  }
+  if (opts.token) {
+    u.username = opts.token;
+  }
+
   arrayProps.forEach((n) => {
     let v = opts[n] as string[] | string;
     if (!Array.isArray(v)) {
@@ -70,28 +136,69 @@ export function encode(opts: Partial<ConnectionOptions>): string {
     }
   });
 
-  stringProps.forEach((n) => {
-    const v = opts[n] as string | undefined;
+  stringProps.forEach(encodeStringPropsFn(opts, u));
+  numberProps.forEach(encodeNumberPropsFn(opts, u));
+  booleanProps.forEach(encodeBooleanPropsFn(opts, u));
+
+  if (opts.tls) {
+    console.log(u);
+    if (u.protocol !== "nats:") {
+      throw new Error("tls options can only be used with nats:// urls");
+    }
+    u.protocol = opts.tls.handshakeFirst ? "natss:" : "tls:";
+    tlsStringProps.forEach(
+      encodeStringPropsFn(opts.tls as Record<string, unknown>, u),
+    );
+  }
+
+  return u.toString();
+}
+
+type Values = boolean | number | string | string[];
+type Obj = Record<string, Values>;
+type Config = Record<string, Values | Obj>;
+
+function configBooleanFn(u: URL, target: Config) {
+  return (n: string) => {
+    const v = u?.searchParams.get(n) || null;
+    if (v !== null) {
+      target[n] = v === "true";
+    }
+  };
+}
+
+function configNumberFn(u: URL, target: Config) {
+  return (
+    n: string,
+  ) => {
+    const v = u?.searchParams.get(n) || null;
+    if (v !== null) {
+      target[n] = parseInt(v);
+    }
+  };
+}
+
+function configStringFn(u: URL, target: Config) {
+  return (n: string) => {
+    const v = u?.searchParams.get(n);
     if (v) {
-      u.searchParams.append(n, encodeURIComponent(v));
+      target[n] = decodeURIComponent(v);
     }
-  });
+  };
+}
 
-  numberProps.forEach((n) => {
-    const v = opts[n] as number | undefined;
-    if (typeof v === "number") {
-      u.searchParams.append(n, v.toString());
+function configStringArrayFn(u: URL, target: Config) {
+  return (n: string) => {
+    let a = u?.searchParams.getAll(n);
+    a = a?.map((s) => decodeURIComponent(s));
+    if (!target[n]) {
+      target[n] = a;
+    } else {
+      const aa = target[n] as string[];
+      aa.push(...a);
+      target[n] = aa;
     }
-  });
-
-  booleanProps.forEach((n) => {
-    const v = opts[n] as boolean | undefined;
-    if (typeof v === "boolean") {
-      u.searchParams.append(n, v ? "true" : "false");
-    }
-  });
-
-  return `nats-opts:${u.searchParams.toString()}`;
+  };
 }
 
 export function parse(
@@ -101,76 +208,50 @@ export function parse(
     return Promise.resolve({ servers: "127.0.0.1:4222" });
   }
 
-  // some implementations of URL.parse() only handle "http/s" rip the protocol
-  // url parsing will inject host/port defaults based on the protocol...
-  // maybe we just ignore that and explicitly look for
-  // server=
-  if (!str.startsWith("nats-opts:")) {
-    return Promise.reject(
-      new Error(
-        "Invalid connection string. Must start with encoded-opts:",
-      ),
-    );
-  }
-
-  const u = URL.parse(`http://nothing:80?${str.substring(10)}`);
+  const u = URL.parse(str);
   if (u === null) {
     return Promise.reject(new Error(`failed to parse '${str}'`));
   }
 
-  const opts: Record<string, boolean | number | string | string[]> = {};
-
-  function configBoolean(
-    n: string,
-  ) {
-    const v = u?.searchParams.get(n) || null;
-    if (v !== null) {
-      opts[n] = v === "true";
+  const opts: ConnectionOptions = {};
+  const r = opts as Record<string, Values>;
+  if (u.protocol !== "nats") {
+    const protocol = u.protocol;
+    const host = u.host;
+    let s = `${protocol}//${host}`;
+    if (u.pathname && u.pathname !== "/") {
+      s += u.pathname;
     }
+    r.servers = [s];
+  } else {
+    r.servers = [u.host];
   }
 
-  function configNumber(
-    n: string,
-  ) {
-    const v = u?.searchParams.get(n) || null;
-    if (v !== null) {
-      opts[n] = parseInt(v);
+  if (u.username) {
+    if (u.password === undefined || u.password === "") {
+      opts.token = u.username;
+    } else {
+      opts.user = u.username;
     }
   }
-
-  function configStringArray(n: string, defaultValue = "") {
-    let a = u?.searchParams.getAll(n);
-    a = a?.map((s) => decodeURIComponent(s));
-    if (defaultValue && a === null) {
-      a = [defaultValue];
-    }
-    if (a) {
-      opts[n] = a;
-    }
+  if (u.password) {
+    opts.pass = u.password;
+  }
+  if (u.protocol === "natss") {
+    opts.tls = { handshakeFirst: true };
   }
 
-  function configString(n: string) {
-    const v = u?.searchParams.get(n);
-    if (v) {
-      opts[n] = decodeURIComponent(v);
-    }
+  booleanProps.forEach(configBooleanFn(u, r));
+  stringProps.forEach(configStringFn(u, r));
+  numberProps.forEach(configNumberFn(u, r));
+  arrayProps.forEach(configStringArrayFn(u, r));
+
+  const tls: Obj = opts.tls as Obj || {};
+  tlsBooleanProps.forEach(configBooleanFn(u, tls));
+  tlsStringProps.forEach(configStringFn(u, tls));
+  if (Object.keys(tls).length > 0) {
+    opts.tls = tls;
   }
-
-  booleanProps.forEach((n) => {
-    configBoolean(n);
-  });
-
-  stringProps.forEach((n) => {
-    configString(n);
-  });
-
-  numberProps.forEach((n) => {
-    configNumber(n);
-  });
-
-  arrayProps.forEach((n) => {
-    configStringArray(n);
-  });
 
   return Promise.resolve(opts);
 }

@@ -36,3 +36,26 @@ Deno.test("basics", async () => {
   await nc.flush();
   await nc.close();
 });
+
+Deno.test("tls", () => {
+  const opts: Partial<ConnectionOptions> = {};
+  opts.debug = true;
+  opts.servers = ["demo.nats.io"];
+  opts.name = "me";
+  opts.noEcho = true;
+  opts.reconnect = false;
+  opts.timeout = 10_000;
+  opts.tls = {
+    handshakeFirst: true,
+  };
+
+  const u = encode(opts);
+  console.log(u);
+
+  console.log(parse(u));
+});
+
+Deno.test("url", async () => {
+  const u = new URL("nats://hello:world@localhost");
+  console.log(u);
+});
