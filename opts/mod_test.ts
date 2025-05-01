@@ -15,6 +15,11 @@
 import type { ConnectionOptions } from "@nats-io/nats-core";
 import { wsconnect } from "@nats-io/nats-core";
 import { encode, parse } from "./mod.ts";
+import {
+  assert,
+  assertEquals,
+  assertExists,
+} from "https://deno.land/std@0.221.0/assert/mod.ts";
 
 Deno.test("basics", async () => {
   const opts: Partial<ConnectionOptions> = {};
@@ -31,16 +36,18 @@ Deno.test("basics", async () => {
   const opts2 = await parse(u);
   console.log(opts2);
 
+  assertEquals(opts, opts2);
+
   const nc = await wsconnect(opts2);
   console.log(nc.getServer());
   await nc.flush();
   await nc.close();
 });
 
-Deno.test("tls", () => {
+Deno.test("tls", async () => {
   const opts: Partial<ConnectionOptions> = {};
   opts.debug = true;
-  opts.servers = ["demo.nats.io"];
+  opts.servers = ["demo.nats.io:2224"];
   opts.name = "me";
   opts.noEcho = true;
   opts.reconnect = false;
@@ -50,12 +57,32 @@ Deno.test("tls", () => {
   };
 
   const u = encode(opts);
-  console.log(u);
+  const opts2 = await parse(u);
 
-  console.log(parse(u));
+  assertEquals(opts, opts2);
 });
 
-Deno.test("url", async () => {
-  const u = new URL("nats://hello:world@localhost");
-  console.log(u);
+Deno.test("schemes", async () => {
+  const opts: Partial<ConnectionOptions> = {};
+  opts.servers = [
+    "nats://localhost:1234",
+    "localhost:4222",
+    "wss://localhost",
+  ];
+
+  const s = encode(opts);
+  const opts2 = await parse(s) as ConnectionOptions;
+
+  assertExists(opts2.servers);
+  assert(Array.isArray(opts2.servers));
+  const n =
+    (opts2.servers as string[]).find((s: string) => s.startsWith("nats://")) ||
+    "";
+  assertEquals(n, "");
+  const n2 =
+    (opts2.servers as string[]).find((s: string) =>
+      s.startsWith("localhost:1234")
+    ) ||
+    "";
+  assertEquals(n2, "localhost:1234");
 });

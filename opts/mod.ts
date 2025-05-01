@@ -92,12 +92,16 @@ function encodeNumberPropsFn(src: Record<string, unknown>, target: URL) {
 }
 
 export function encode(opts: Partial<ConnectionOptions>): string {
+  opts = opts || {};
+  opts = Object.assign({}, opts);
+
   if (typeof opts?.servers === "string") {
     opts.servers = [opts.servers];
   }
   let u: URL;
   if (opts?.servers?.length) {
     if (
+      opts.servers[0].startsWith("nats://") ||
       opts.servers[0].startsWith("wss://") ||
       opts.servers[0].startsWith("ws://")
     ) {
@@ -141,7 +145,6 @@ export function encode(opts: Partial<ConnectionOptions>): string {
   booleanProps.forEach(encodeBooleanPropsFn(opts, u));
 
   if (opts.tls) {
-    console.log(u);
     if (u.protocol !== "nats:") {
       throw new Error("tls options can only be used with nats:// urls");
     }
@@ -215,7 +218,10 @@ export function parse(
 
   const opts: ConnectionOptions = {};
   const r = opts as Record<string, Values>;
-  if (u.protocol !== "nats") {
+  if (u.protocol === "natss:") {
+    opts.tls = { handshakeFirst: true };
+    r.servers = [u.host];
+  } else if (u.protocol !== "nats:") {
     const protocol = u.protocol;
     const host = u.host;
     let s = `${protocol}//${host}`;
