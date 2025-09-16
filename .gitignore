@@ -4,4 +4,5 @@
 .vscode/
 coverage/
 lib/
+build/
 node_modules/

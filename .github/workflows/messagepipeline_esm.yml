@@ -30,7 +30,6 @@ jobs:
       - name: Test
         working-directory: messagepipeline
         run: |
-          deno task build
           deno test -A
           deno task clean
       - name: Publish
