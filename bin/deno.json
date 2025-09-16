@@ -14,9 +14,7 @@
     "cover": "deno coverage  ./coverage --lcov > ./coverage/out.lcov && genhtml -o ./coverage/html ./coverage/out.lcov && open ./coverage/html/index.html"
   },
   "imports": {
-    "@nats-io/nkeys": "jsr:@nats-io/nkeys@2.0.3",
-    "@nats-io/nats-core": "jsr:@nats-io/nats-core@^3.1.0",
-    "@nats-io/services": "jsr:@nats-io/services@^3.1.0"
-  },
-  "nodeModulesDir": "auto"
+    "@std/cli/parse-args": "jsr:@std/cli/parse-args",
+    "@std/path": "jsr:@std/path"
+  }
 }

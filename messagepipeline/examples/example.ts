@@ -12,9 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MutableMsg, Pipeline } from "../mod.ts";
-import { connect, Empty, headers } from "jsr:@nats-io/transport-deno@3.0.0-5";
-import type { Msg } from "jsr:@nats-io/transport-deno@3.0.0-5";
+import { MutableMsg, Pipeline } from "../src/mod.ts";
+import { Empty, headers, type Msg, wsconnect } from "@nats-io/nats-core";
 
 function valid(m: Msg): Msg {
   if (m.data.length > 0) {
@@ -47,7 +46,7 @@ function reverse(m: Msg): Msg {
   }
 }
 
-const nc = await connect({ servers: ["demo.nats.io"] });
+const nc = await wsconnect({ servers: ["wss://demo.nats.io:8443"] });
 const iter = nc.subscribe("hello");
 (async () => {
   const pipeline = new Pipeline(valid, reverse);
@@ -62,7 +61,7 @@ const iter = nc.subscribe("hello");
 })();
 await nc.flush();
 
-const nc2 = await connect({ servers: ["demo.nats.io"] });
+const nc2 = await wsconnect({ servers: ["wss://demo.nats.io:8443"] });
 let i = 0;
 setInterval(() => {
   nc2.request("hello", `hello ${++i}`)
