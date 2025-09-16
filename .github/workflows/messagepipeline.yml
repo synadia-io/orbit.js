@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - "messagepipeline/**"
-    tags:
-      - "*"
     branches:
       - "*"
   pull_request:

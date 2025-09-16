@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - 'nhgc/**'
-    tags:
-      - '*'
     branches:
       - '*'
   pull_request:
