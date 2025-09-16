@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         deno-version: [2.5.x]
+        node-version: [24.x]
 
     runs-on: ubuntu-latest
     permissions:
@@ -27,12 +28,21 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ matrix.deno-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: "https://registry.npmjs.org"
+
       - name: Test
         working-directory: messagepipeline
         run: |
-          deno task build
-          deno test -A
-          deno task clean
+          npm install
+          npm run build
       - name: Publish
-        working-directory: messagepipeline
-        run: deno publish
+        run: |
+          cd messagepipeline
+          npm publish --provenance --access public --tag=latest
+        continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

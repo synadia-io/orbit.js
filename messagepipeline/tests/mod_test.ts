@@ -12,10 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { connect } from "jsr:@nats-io/transport-deno@3.0.0-5";
-import { headers } from "@nats-io/nats-core";
-import type { Msg } from "./mod.ts";
-import { MutableMsg, Pipeline } from "./mod.ts";
+import { headers, wsconnect } from "@nats-io/nats-core";
+import type { Msg } from "../src/mod.ts";
+import { MutableMsg, Pipeline } from "../src/mod.ts";
 import {
   assertEquals,
   assertExists,
@@ -24,7 +23,7 @@ import {
 import { nuid, syncIterator } from "@nats-io/nats-core";
 
 Deno.test("mm - copies values", async () => {
-  const nc = await connect({ servers: "demo.nats.io" });
+  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
   const subj = nuid.next();
   const reply = subj.split("").reverse().join();
   const sub = syncIterator<Msg>(nc.subscribe(subj));
@@ -68,7 +67,7 @@ Deno.test("mm - publisher must be set", () => {
 });
 
 Deno.test("mm - respond", async () => {
-  const nc = await connect({ servers: "demo.nats.io" });
+  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
   const subj = nuid.next();
 
   (async () => {
@@ -131,14 +130,14 @@ Deno.test("pipeline", async () => {
       const body = { message };
       mm.data = new TextEncoder().encode(JSON.stringify(body));
     } catch (err) {
-      const body = { error: err.message };
+      const body = { error: (err as Error).message };
       mm.data = new TextEncoder().encode(JSON.stringify(body));
     }
     return Promise.resolve(mm);
   }
 
   const pipeline = new Pipeline(toJSON);
-  const nc = await connect({ servers: "demo.nats.io" });
+  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
   const subj = nuid.next();
   const sub = nc.subscribe(subj);
   (async () => {
@@ -169,7 +168,7 @@ Deno.test("pipeline error", async () => {
   }
 
   const pipeline = new Pipeline(failIt);
-  const nc = await connect({ servers: "demo.nats.io" });
+  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
   const subj = nuid.next();
   const sub = nc.subscribe(subj);
   (async () => {

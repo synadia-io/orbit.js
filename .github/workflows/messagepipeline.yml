@@ -3,14 +3,14 @@ name: messagepipeline
 on:
   push:
     paths:
-      - 'messagepipeline/**'
+      - "messagepipeline/**"
     tags:
-      - '*'
+      - "*"
     branches:
-      - '*'
+      - "*"
   pull_request:
     paths:
-      - 'messagepipeline/**'
+      - "messagepipeline/**"
     branches: [main]
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
     environment: CI
     strategy:
       matrix:
-        deno-version: [1.42.4]
+        deno-version: [2.5.x]
 
     steps:
       - name: Git Checkout messagepipelines
@@ -37,7 +37,6 @@ jobs:
         working-directory: messagepipeline
         run: |
           deno fmt --check --ignore=docs/
-        
 
       - name: Test Deno Module
         working-directory: messagepipeline
@@ -45,5 +44,4 @@ jobs:
           TMPDIR: ${{ runner.temp }}
           CI: true
         run: |
-          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov 
-
+          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov
