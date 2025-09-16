@@ -15,6 +15,7 @@
   },
   "imports": {
     "@std/cli/parse-args": "jsr:@std/cli/parse-args",
-    "@std/path": "jsr:@std/path"
+    "@std/path": "jsr:@std/path",
+    "@std/fs": "jsr:@std/fs"
   }
 }
