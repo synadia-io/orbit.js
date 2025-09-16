@@ -1,0 +1,47 @@
+name: muxsub
+
+on:
+  push:
+    paths:
+      - "muxsub/**"
+    tags:
+      - "*"
+    branches:
+      - "*"
+  pull_request:
+    paths:
+      - "muxsub/**"
+    branches: [main]
+
+jobs:
+  test:
+    name: ${{ matrix.config.kind }} ${{ matrix.config.os }}
+    runs-on: ubuntu-latest
+    environment: CI
+    strategy:
+      matrix:
+        deno-version: [2.5.x]
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Use Deno Version ${{ matrix.deno-version }}
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno-version }}
+
+      - name: Lint Deno Module
+        working-directory: muxsub
+        run: |
+          deno fmt --check --ignore=docs/
+
+      - name: Test Deno Module
+        working-directory: muxsub
+        env:
+          TMPDIR: ${{ runner.temp }}
+          CI: true
+        run: |
+          deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov
