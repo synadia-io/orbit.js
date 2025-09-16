@@ -43,6 +43,5 @@ jobs:
         run: |
           cd messagepipeline
           npm publish --provenance --access public --tag=latest
-        continue-on-error: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -2,7 +2,7 @@
   "name": "@synadiaorbit/messagepipeline",
   "version": "1.0.0-3",
   "exports": {
-    ".": "./mod.ts"
+    ".": "./src/mod.ts"
   },
   "publish": {
     "exclude": ["./examples"]
