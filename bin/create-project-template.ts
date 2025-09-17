@@ -626,17 +626,15 @@ async function main() {
   const description = args[1];
 
   let version = "1.0.0-1";
-  let author = "The NATS Authors";
-  let basePath = ".";
+  let author = "Synadia Communications, Inc."
+
+    let basePath = ".";
 
   // Parse additional options
   for (let i = 2; i < args.length; i += 2) {
     switch (args[i]) {
       case "--version":
         version = args[i + 1];
-        break;
-      case "--author":
-        author = args[i + 1];
         break;
       case "--base-path":
         basePath = args[i + 1];

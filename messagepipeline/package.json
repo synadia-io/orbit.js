@@ -28,7 +28,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "The NATS Authors"
+    "name": "Synadia Communications, Inc."
   },
   "description": "messagepipeline - pipeline middleware for NATS subscriptions",
   "dependencies": {
