@@ -28,7 +28,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "The NATS Authors"
+    "name": "Synadia Communications, Inc."
   },
   "description": "muxsub - multiplexed NATS subscriptions",
   "dependencies": {

@@ -1,5 +1,12 @@
 # MessagePipeline
 
+[![License](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://github.com/synadia-io/orbit.js/blob/main/LICENSE)
+[![messagepipeline](https://github.com/synadia-io/orbit.js/actions/workflows/messagepipeline.yml/badge.svg)](https://github.com/synadia-io/orbit.js/actions/workflows/messagepipeline.yml)
+[![JSR](https://jsr.io/badges/@synadiaorbit/messagepipeline)](https://jsr.io/@synadiaorbit/messagepipeline)
+[![JSR Score](https://jsr.io/badges/@synadiaorbit/messagepipeline/score)](https://jsr.io/@synadiaorbit/messagepipeline)
+[![NPM Version](https://img.shields.io/npm/v/%40synadiaorbit%2Fmessagepipeline)](https://www.npmjs.com/package/@synadiaorbit/messagepipeline)
+[![NPM Downloads](https://img.shields.io/npm/dt/%40synadiaorbit%2Fmessagepipeline)](https://www.npmjs.com/package/@synadiaorbit/messagepipeline)
+
 The MessagePipeline utility allows you to compose a set of one or more
 transformations that you can easily reuse across message handlers. If you are
 thinking middleware for NATS, you are on the right track.
