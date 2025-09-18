@@ -563,6 +563,13 @@ export class ${
   private async createReadme(projectPath: string): Promise<void> {
     const readme = `# ${this.projectName}
 
+[![License](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://github.com/synadia-io/orbit.js/blob/main/LICENSE)
+[![${this.projectName}](https://github.com/synadia-io/orbit.js/actions/workflows/${this.projectName}.yml/badge.svg)](https://github.com/synadia-io/orbit.js/actions/workflows/${this.projectName}.yml)
+[![JSR](https://jsr.io/badges/@synadiaorbit/${this.projectName})](https://jsr.io/@synadiaorbit/${this.projectName})
+[![JSR Score](https://jsr.io/badges/@synadiaorbit/${this.projectName}/score)](https://jsr.io/@synadiaorbit/${this.projectName})
+[![NPM Version](https://img.shields.io/npm/v/%40synadiaorbit%2F${this.projectName})](https://www.npmjs.com/package/@synadiaorbit/${this.projectName})
+[![NPM Downloads](https://img.shields.io/npm/dt/%40synadiaorbit%2F${this.projectName})](https://www.npmjs.com/package/@synadiaorbit/${this.projectName})
+
 ${this.config.description}
 
 ## Installation
@@ -626,9 +633,9 @@ async function main() {
   const description = args[1];
 
   let version = "1.0.0-1";
-  let author = "Synadia Communications, Inc."
+  const author = "Synadia Communications, Inc.";
 
-    let basePath = ".";
+  let basePath = ".";
 
   // Parse additional options
   for (let i = 2; i < args.length; i += 2) {
