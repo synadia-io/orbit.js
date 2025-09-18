@@ -1,6 +1,12 @@
 # counters
 
-jetstream counter streams
+JetStream Counters
+
+JetStream 2.12 introduced a new counter feature that enables efficient counter
+CRDT (Conflict-free Replicated Data Type) operations that are order independent.
+A stream is set up for counters by enabling its `allow_msg_counter` and
+`allow_direct` options. Counter streams can only be used for counter operations,
+but can be aggregated and distributed across clusters and super-clusters.
 
 ## Installation
 
