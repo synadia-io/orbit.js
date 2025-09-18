@@ -14,3 +14,6 @@ This is a list of the current utilities hosted here
 | Module | Description                                   | Docs                        |
 | ------ | --------------------------------------------- | --------------------------- |
 | NHGC   | A Javascript client for the NATS HTTP Gateway | [README.md](nhgc/README.md) |
+| MuxSub | A NATS multiplexing subscription utility | [README.md](muxsub/README.md) |
+| MessagePipeline | Middleware transformations for NATS messages | [README.md](messagepipeline/README.md) |
+| Counters | JetStream-based atomic counter implementation | [README.md](counters/README.md) |

@@ -1,0 +1,37 @@
+name: counters jsr release
+
+on:
+  release:
+    types: [created]
+    tags:
+      - "counters/*"
+
+jobs:
+  test:
+    environment: CI
+    strategy:
+      matrix:
+        deno-version: [2.5.x]
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Use Deno Version ${{ matrix.deno-version }}
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno-version }}
+      - name: Test
+        working-directory: counters
+        run: |
+          deno test -A
+          deno task clean
+      - name: Publish
+        working-directory: counters
+        run: deno publish
