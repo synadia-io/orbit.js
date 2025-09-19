@@ -1,0 +1,43 @@
+{
+  "name": "@synadiaorbit/counters",
+  "version": "1.0.0-1",
+  "files": [
+    "lib/",
+    "LICENSE",
+    "README.md"
+  ],
+  "types": "./lib/mod.d.js",
+  "exports": {
+    ".": "./lib/mod.js"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/synadia-io/orbit.js.git"
+  },
+  "private": false,
+  "scripts": {
+    "real-clean": "npm run clean && shx rm -Rf ./node_modules",
+    "clean": "shx rm -Rf ./build ./lib",
+    "pre-process": "npm run clean && deno run -A ../bin/cjs-fix-imports.ts -o ./build/src ./src",
+    "build-cjs": "npm run pre-process && tsc",
+    "build": "npm run build-cjs",
+    "prepack": "npm run build",
+    "bump-qualifier": "npm version prerelease --no-commit-hooks --no-git-tag-version",
+    "bump-release": "npm version patch --no-commit-hooks --no-git-tag-version"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Synadia Communications, Inc."
+  },
+  "description": "jetstream counter streams",
+  "dependencies": {
+    "@nats-io/nats-core": "3.1.0",
+    "@nats-io/jetstream": "3.2.0-2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.0",
+    "shx": "^0.4.0",
+    "typescript": "^5.9.2"
+  }
+}
