@@ -18,7 +18,7 @@ import { jetstreamManager } from "@nats-io/jetstream";
 import { type Counter, NewCounter } from "../src/mod.ts";
 import { assertArrayIncludes, assertEquals, assertExists } from "@std/assert";
 
-const url = "ws://localhost:9222";
+const url = "wss://demo.nats.io:8443";
 
 Deno.test("counter - basics", async () => {
   const nc = await wsconnect({ servers: url });

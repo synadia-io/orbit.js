@@ -1,15 +1,15 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@nats-io/jetstream@^3.2.0-2": "3.2.0-2",
-    "jsr:@nats-io/nats-core@3.1.0": "3.1.0",
-    "jsr:@nats-io/nats-core@^3.1.0": "3.1.0",
+    "jsr:@nats-io/jetstream@^3.2.0": "3.2.0",
+    "jsr:@nats-io/nats-core@3.2.0": "3.2.0",
+    "jsr:@nats-io/nats-core@^3.2.0": "3.2.0",
     "jsr:@nats-io/nkeys@2.0.3": "2.0.3",
     "jsr:@nats-io/nuid@2.0.3": "2.0.3",
     "jsr:@std/assert@^1.0.14": "1.0.14",
     "jsr:@std/internal@^1.0.10": "1.0.10",
-    "npm:@nats-io/jetstream@3.2.0-2": "3.2.0-2",
-    "npm:@nats-io/nats-core@3.1.0": "3.1.0",
+    "npm:@nats-io/jetstream@3.2.0": "3.2.0",
+    "npm:@nats-io/nats-core@3.2.0": "3.2.0",
     "npm:@types/node@^24.5.0": "24.5.0",
     "npm:fast-glob@3.3.3": "3.3.3",
     "npm:shx@0.4": "0.4.0",
@@ -17,14 +17,14 @@
     "npm:typescript@^5.9.2": "5.9.2"
   },
   "jsr": {
-    "@nats-io/jetstream@3.2.0-2": {
-      "integrity": "abb535de8e0db4bcfcc5236fdcf2beb8ad89f250b4b3df59b4be3d8d2c86f572",
+    "@nats-io/jetstream@3.2.0": {
+      "integrity": "f0cb819b3926a2d279d7db983e22924810c9d13e2c3ac7b5ec6eb9c6dcb03d68",
       "dependencies": [
-        "jsr:@nats-io/nats-core@3.1.0"
+        "jsr:@nats-io/nats-core@3.2.0"
       ]
     },
-    "@nats-io/nats-core@3.1.0": {
-      "integrity": "23d343db34c1b5778c33ee41e18169c71a0fbb6eeb2f96584165299c4967a958",
+    "@nats-io/nats-core@3.2.0": {
+      "integrity": "63d4958c9327de4d1ad436a17969290df7c96f9f887c3190e05839574aaa9e9b",
       "dependencies": [
         "jsr:@nats-io/nkeys",
         "jsr:@nats-io/nuid"
@@ -50,14 +50,14 @@
     }
   },
   "npm": {
-    "@nats-io/jetstream@3.2.0-2": {
-      "integrity": "sha512-WQVobCu1lDuZ5wCPmGTO9viJyJ4buUsEWUcL9sgA52Ka7htRUwPOAouogFCjWFrxt8GhH1YXiivruC+Fbr9yLw==",
+    "@nats-io/jetstream@3.2.0": {
+      "integrity": "sha512-6H/vMjTMPsFEXKGK7dqScwHEtP1ZedZrwbCdRQuYDIVq4WLqZOD6ryeEZ/gMAP7YKLy82G6IixGUm2DVsDPCMw==",
       "dependencies": [
         "@nats-io/nats-core"
       ]
     },
-    "@nats-io/nats-core@3.1.0": {
-      "integrity": "sha512-xsSkLEGGcqNF+Ru8dMjPmKtfbBeq/U4meuJJX4Zi+5TBHpjpjNjs4YkCBC/pGYWnEum1/vdNPizjE1RdNHCyBg==",
+    "@nats-io/nats-core@3.2.0": {
+      "integrity": "sha512-yHMsS0RTkKRh80COCGY/kuhEj0KPU47qkVU6IPEXmqjmskH6mX2roykxY5CXCAQc78FKYrpKQp6EHv02dRAjDw==",
       "dependencies": [
         "@nats-io/nkeys",
         "@nats-io/nuid"
@@ -342,14 +342,14 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@nats-io/jetstream@^3.2.0-2",
-      "jsr:@nats-io/nats-core@^3.1.0",
+      "jsr:@nats-io/jetstream@^3.2.0",
+      "jsr:@nats-io/nats-core@^3.2.0",
       "jsr:@std/assert@^1.0.14"
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@nats-io/jetstream@3.2.0-2",
-        "npm:@nats-io/nats-core@3.1.0",
+        "npm:@nats-io/jetstream@3.2.0",
+        "npm:@nats-io/nats-core@3.2.0",
         "npm:@types/node@^24.5.0",
         "npm:shx@0.4",
         "npm:typescript@^5.9.2"

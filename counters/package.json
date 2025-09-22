@@ -1,6 +1,6 @@
 {
   "name": "@synadiaorbit/counters",
-  "version": "1.0.0-1",
+  "version": "1.0.0",
   "files": [
     "lib/",
     "LICENSE",
@@ -32,8 +32,8 @@
   },
   "description": "jetstream counter streams",
   "dependencies": {
-    "@nats-io/nats-core": "3.1.0",
-    "@nats-io/jetstream": "3.2.0-2"
+    "@nats-io/nats-core": "3.2.0",
+    "@nats-io/jetstream": "3.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.5.0",
