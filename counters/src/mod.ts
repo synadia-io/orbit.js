@@ -34,6 +34,9 @@ import {
 
 import { CounterApi } from "./counterapi.ts";
 
+/**
+ * Represents a set of operations for managing and querying JetStream counters.
+ */
 export type Counters = {
   /**
    * Increment a counter by the specified delta
@@ -91,6 +94,9 @@ export type CounterValue = PubAck & {
   val: string;
 };
 
+/**
+ * A JetStream Counter
+ */
 export class Counter {
   m: Msg;
   constructor(m: Msg) {
@@ -150,6 +156,14 @@ export class Counter {
   }
 }
 
+/**
+ * Creates a new instance of Counters for managing and interacting with counters.
+ *
+ * @param {NatsConnection} nc - The NATS connection used for communication.
+ * @param {string} stream - The stream associated with the counters.
+ * @param {JetStreamOptions} [opts={}] - Optional JetStream configuration options for customizing the JetStream behavior.
+ * @return {Counters} A new instance of the Counters interface for managing counters.
+ */
 export function NewCounter(
   nc: NatsConnection,
   stream: string,
