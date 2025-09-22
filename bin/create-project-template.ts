@@ -218,10 +218,10 @@ jobs:
     const workflow = `name: ${this.projectName} jsr release
 
 on:
-  release:
-    types: [created]
+  push:
     tags:
-      - "${this.projectName}/*"
+      - "${this.projectName}/v*"
+  workflow_dispatch:
 
 jobs:
   test:
@@ -251,7 +251,7 @@ jobs:
           deno task clean
       - name: Publish
         working-directory: ${this.projectName}
-        run: deno publish
+        run: deno publish --allow-dirty
 `;
 
     await Deno.writeTextFile(
@@ -269,10 +269,10 @@ jobs:
     const workflow = `name: ${this.projectName} npm release
 
 on:
-  release:
-    types: [created]
+  push:
     tags:
-      - "${this.projectName}/*"
+      - "${this.projectName}/v*"
+  workflow_dispatch:
 
 jobs:
   test:
