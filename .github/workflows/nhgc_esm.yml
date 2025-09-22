@@ -3,7 +3,8 @@ name: nhgc release
 on:
   push:
     tags:
-      - 'nhgc/*'
+      - 'nhgc/v*'
+  workflow_dispatch:
 
 jobs:
   test:

@@ -1,10 +1,10 @@
 name: counters npm release
 
 on:
-  release:
-    types: [created]
+  push:
     tags:
-      - "counters/*"
+      - "counters/v*"
+  workflow_dispatch:
 
 jobs:
   test:

@@ -1,10 +1,10 @@
 name: messagepipeline release
 
 on:
-  release:
-    types: [created]
+  push:
     tags:
-      - "messagepipeline/*"
+      - "messagepipeline/v*"
+  workflow_dispatch:
 
 jobs:
   test:

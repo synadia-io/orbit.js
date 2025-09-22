@@ -1,10 +1,10 @@
 name: muxsub jsr release
 
 on:
-  release:
-    types: [created]
+  push:
     tags:
-      - "muxsub/*"
+      - "muxsub/v*"
+  workflow_dispatch:
 
 jobs:
   test:
@@ -34,4 +34,4 @@ jobs:
           deno task clean
       - name: Publish
         working-directory: muxsub
-        run: deno publish
+        run: deno publish --allow-dirty

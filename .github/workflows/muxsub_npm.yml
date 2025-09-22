@@ -1,10 +1,10 @@
 name: muxsub npm release
 
 on:
-  release:
-    types: [created]
+  push:
     tags:
-      - "muxsub/*"
+      - "muxsub/v*"
+  workflow_dispatch:
 
 jobs:
   test:
