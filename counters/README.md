@@ -20,7 +20,7 @@ but can be aggregated and distributed across clusters and super-clusters.
 ### Deno/Web Browser
 
 ```typescript
-import { Counters } from "jsr:@synadiaorbit/counters";
+import { NewCounter } from "jsr:@synadiaorbit/counters";
 ```
 
 ### Node.js
@@ -30,7 +30,7 @@ npm install @synadiaorbit/counters
 ```
 
 ```typescript
-import { Counters } from "@synadiaorbit/counters";
+import { NewCounter } from "@synadiaorbit/counters";
 ```
 
 ## Usage
