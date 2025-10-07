@@ -16,7 +16,7 @@
 import { deferred, wsconnect } from "@nats-io/nats-core";
 import type { Msg } from "@nats-io/nats-core";
 import { MuxSubscription } from "../src/mod.ts";
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 
 Deno.test("muxsub", async () => {
   const nc = await wsconnect({
@@ -46,6 +46,26 @@ Deno.test("muxsub", async () => {
 
   nc.publish(mux.subjectFor("foo.bar"), "hello world");
   nc.publish(mux.subjectFor("bar.foo"), "world hello");
+
+  const qi2 = mux.newMuxInbox("baz.foo");
+  const done = (async () => {
+    for await (const m of qi2) {
+      if (m.reply) {
+        m.respond("hello world");
+        console.log("responded to baz.foo");
+      }
+    }
+  })();
+
+  await nc.request(mux.subjectFor("baz.foo"), "hello world", { timeout: 1000 });
+  mux.cancelMuxInbox("baz.foo");
+  await done;
+
+  await assertRejects(() => {
+    return nc.request(mux.subjectFor("baz.foo"), "hello world", {
+      timeout: 1000,
+    });
+  });
 
   await mux.drain();
   // iter closed!

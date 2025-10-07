@@ -22,10 +22,29 @@ import type {
 import { createInbox } from "@nats-io/nats-core";
 import { QueuedIteratorImpl } from "@nats-io/nats-core/internal";
 
+/**
+ * MuxSubscription provides a multiplexed subscription mechanism that allows
+ * multiple logical subscriptions to share a single underlying NATS subscription.
+ * This is useful for reducing the number of subscriptions when many temporary
+ * reply subjects are needed, such as in request-response patterns.
+ */
 export class MuxSubscription {
+  /**
+   * The inbox prefix used for all multiplexed subjects.
+   */
   prefix: string;
+  /**
+   * The underlying NATS subscription.
+   */
   sub: Subscription;
+  /**
+   * Map of tokens to their corresponding message handlers (callbacks or iterators).
+   */
   handlers: Map<string, MsgCallback<Msg> | QueuedIterator<Msg>> = new Map();
+  /**
+   * Creates a new MuxSubscription instance.
+   * @param nc - The NATS connection to use for the subscription.
+   */
   constructor(nc: NatsConnection) {
     const prefix = createInbox();
     this.prefix = prefix;
@@ -67,9 +86,9 @@ export class MuxSubscription {
   }
 
   /**
-   * A promise that resolves when the subscription closes. If the promise
+   * A promise that resolves when the MuxSubscription closes. If the promise
    * resolves to an error, the subscription was closed because of an error
-   * typically a permissions error. Note that this promise doesn't reject, but
+   * typically a permission error. Note that this promise doesn't reject, but
    * rather resolves to void (no error) or an Error
    */
   get closed(): Promise<void | Error> {
@@ -77,26 +96,33 @@ export class MuxSubscription {
   }
 
   /**
-   * Returns true if the subscription is draining.
+   * Returns true if the MuxSubscription is draining.
    */
   isDraining(): boolean {
     return this.sub.isDraining();
   }
 
   /**
-   * Returns true if the subscription is closed.
+   * Returns true if the MuxSubscription is closed.
    */
   isClosed(): boolean {
     return this.sub.isClosed();
   }
 
   /**
-   * Returns the subject used to create the subscription.
+   * Returns the wildcard subject used by the MuxSubscription.
    */
   getSubject(): string {
     return this.sub.getSubject();
   }
 
+  /**
+   * Returns the subject for the specified subject token.
+   * If the partial subject already contains the prefix, it is stripped first.
+   * @param partialSubject - The partial subject to convert to a full subject.
+   * @returns The full subject with the mux prefix.
+   * @throws {Error} If the partial subject starts with '.'.
+   */
   subjectFor(partialSubject: string): string {
     if (partialSubject.startsWith(this.prefix)) {
       partialSubject = partialSubject.slice(this.prefix.length + 1);
@@ -107,6 +133,13 @@ export class MuxSubscription {
     return `${this.prefix}.${partialSubject}`;
   }
 
+  /**
+   * Extracts the token (suffix) from the full subject.
+   * If the subject already contains the prefix, it is stripped.
+   * @param subj - The subject to extract the token from.
+   * @returns The token extracted from the subject.
+   * @throws {Error} If the subject starts with '.'.
+   */
   tokenFor(subj: string): string {
     if (subj.startsWith(this.prefix)) {
       subj = subj.slice(this.prefix.length + 1);
@@ -117,7 +150,23 @@ export class MuxSubscription {
     return subj;
   }
 
+  /**
+   * Creates a new inbox backed by the MuxSubscription for receiving messages.
+   *
+   * This method has two forms:
+   * - When called with only a subject, it returns a QueuedIterator for async iteration
+   * - When called with a subject and callback, it registers the callback and returns undefined
+   *
+   * @param subj - The subject token for this inbox.
+   * @returns A QueuedIterator when no callback is provided, undefined when a callback is provided.
+   */
   newMuxInbox(subj: string): QueuedIterator<Msg>;
+  /**
+   * Creates a new inbox backed by the MuxSubscription for receiving messages with a callback.
+   * @param subj - The subject token for this inbox.
+   * @param cb - The callback to invoke when messages are received.
+   * @returns undefined
+   */
   newMuxInbox(subj: string, cb: MsgCallback<Msg>): undefined;
   newMuxInbox(
     subj: string,
@@ -138,6 +187,13 @@ export class MuxSubscription {
     return qi;
   }
 
+  /**
+   * Cancels an inbox for the specified token, stopping message delivery and
+   * cleaning up resources. Other inboxes in the MuxSubscription will continue
+   * to receive messages. If the handler is a QueuedIterator, it will be
+   * stopped gracefully.
+   * @param subj - The subject token of the inbox to cancel.
+   */
   cancelMuxInbox(subj: string) {
     subj = this.tokenFor(subj);
     const qi = this.handlers.get(subj);
@@ -150,20 +206,21 @@ export class MuxSubscription {
   }
 
   /**
-   * Drain the subscription, closing it after processing all messages
-   * currently in flight for the client. Returns a promise that resolves
-   * when the subscription finished draining.
+   * Drain the MuxSubscription, closing it after processing all messages
+   * currently in flight for the client. All inboxes are stopped.
+   * @returns A promise that resolves when the subscription finished draining.
    */
   drain(): Promise<void> {
     return this.sub.drain();
   }
 
   /**
-   * Stop the subscription from receiving messages. You can optionally
+   * Stops the MuxSubscription. All inboxes are stopped. You can optionally
    * specify that the subscription should stop after the specified number
    * of messages have been received. Note this count is since the lifetime
    * of the subscription.
-   * @param max
+   * @param max - Optional maximum number of messages to receive before unsubscribing
+   * and stopping the MuxSubscription
    */
   unsubscribe(max?: number): void {
     return this.sub.unsubscribe(max);
