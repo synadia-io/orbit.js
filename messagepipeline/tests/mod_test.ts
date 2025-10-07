@@ -15,11 +15,7 @@
 import { headers, wsconnect } from "@nats-io/nats-core";
 import type { Msg } from "../src/mod.ts";
 import { MutableMsg, Pipeline } from "../src/mod.ts";
-import {
-  assertEquals,
-  assertExists,
-  assertThrows,
-} from "https://deno.land/std@0.221.0/assert/mod.ts";
+import { assertEquals, assertExists, assertThrows } from "@std/assert";
 import { nuid, syncIterator } from "@nats-io/nats-core";
 
 Deno.test("mm - copies values", async () => {
