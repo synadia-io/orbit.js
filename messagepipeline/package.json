@@ -1,6 +1,6 @@
 {
   "name": "@synadiaorbit/messagepipeline",
-  "version": "1.0.0-4",
+  "version": "1.0.0",
   "files": [
     "lib/",
     "LICENSE",
@@ -32,8 +32,8 @@
   },
   "description": "messagepipeline - pipeline middleware for NATS subscriptions",
   "dependencies": {
-    "@nats-io/nats-core": "3.1.0",
-    "@nats-io/services": "3.1.0"
+    "@nats-io/nats-core": "3.2.0",
+    "@nats-io/services": "3.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.5.0",
