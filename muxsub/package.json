@@ -1,6 +1,6 @@
 {
   "name": "@synadiaorbit/muxsub",
-  "version": "1.0.0-1",
+  "version": "1.0.0",
   "files": [
     "lib/",
     "LICENSE",
@@ -32,7 +32,7 @@
   },
   "description": "muxsub - multiplexed NATS subscriptions",
   "dependencies": {
-    "@nats-io/nats-core": "3.1.0"
+    "@nats-io/nats-core": "3.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.5.0",
