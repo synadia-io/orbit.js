@@ -1,0 +1,142 @@
+name: release
+
+on:
+  push:
+    tags: ["*/v*"]
+  workflow_dispatch:
+    inputs:
+      module:
+        required: true
+        type: choice
+        options:
+          - counters
+          - messagepipeline
+          - muxsub
+          - nhgc
+      version:
+        required: true
+        description: "version (no v prefix), e.g. 1.2.3"
+      npm_tag:
+        default: latest
+        type: choice
+        options:
+          - latest
+          - next
+          - beta
+          - rc
+      dry_run:
+        type: boolean
+        default: true
+        description: "build + dry-run publish, skip actual upload"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: CI
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - id: ctx
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MOD="${{ inputs.module }}"
+            VER="${{ inputs.version }}"
+            DRY="${{ inputs.dry_run }}"
+            NPM_TAG="${{ inputs.npm_tag }}"
+          else
+            REF="${{ github.ref_name }}"
+            MOD="${REF%%/v*}"
+            VER="${REF##*/v}"
+            DRY="false"
+            NPM_TAG="latest"
+          fi
+          if [ ! -d "$MOD" ]; then
+            echo "module dir not found: $MOD"; exit 1
+          fi
+          HAS_NPM=false
+          HAS_JSR=false
+          [ -f "$MOD/package.json" ] && HAS_NPM=true
+          [ -f "$MOD/deno.json" ]    && HAS_JSR=true
+          if [ "$HAS_NPM" = "false" ] && [ "$HAS_JSR" = "false" ]; then
+            echo "no package.json or deno.json in $MOD"; exit 1
+          fi
+          {
+            echo "module=$MOD"
+            echo "version=$VER"
+            echo "dry_run=$DRY"
+            echo "npm_tag=$NPM_TAG"
+            echo "has_npm=$HAS_NPM"
+            echo "has_jsr=$HAS_JSR"
+          } >> "$GITHUB_OUTPUT"
+          echo "::notice::module=$MOD version=$VER dry_run=$DRY npm=$HAS_NPM jsr=$HAS_JSR tag=$NPM_TAG"
+
+      - name: verify versions match tag
+        working-directory: ${{ steps.ctx.outputs.module }}
+        shell: bash
+        run: |
+          V="${{ steps.ctx.outputs.version }}"
+          if [ "${{ steps.ctx.outputs.has_npm }}" = "true" ]; then
+            P=$(jq -r .version package.json)
+            if [ "$V" != "$P" ]; then
+              echo "version mismatch: tag=$V package.json=$P"; exit 1
+            fi
+          fi
+          if [ "${{ steps.ctx.outputs.has_jsr }}" = "true" ]; then
+            D=$(jq -r .version deno.json)
+            if [ "$V" != "$D" ]; then
+              echo "version mismatch: tag=$V deno.json=$D"; exit 1
+            fi
+          fi
+
+      - uses: denoland/setup-deno@v2
+        if: steps.ctx.outputs.has_jsr == 'true'
+        with:
+          deno-version: 2.6.x
+
+      - uses: actions/setup-node@v6
+        if: steps.ctx.outputs.has_npm == 'true'
+        with:
+          node-version: 25.x
+          registry-url: "https://registry.npmjs.org"
+
+      - name: jsr test
+        if: steps.ctx.outputs.has_jsr == 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        run: |
+          deno test -A
+          deno task clean 2>/dev/null || true
+
+      - name: jsr publish (dry-run)
+        if: steps.ctx.outputs.has_jsr == 'true' && steps.ctx.outputs.dry_run == 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        run: deno publish --allow-dirty --dry-run
+
+      - name: jsr publish
+        if: steps.ctx.outputs.has_jsr == 'true' && steps.ctx.outputs.dry_run != 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        run: deno publish --allow-dirty
+
+      - name: npm build
+        if: steps.ctx.outputs.has_npm == 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        run: |
+          npm install
+          npm run build
+
+      - name: npm publish (dry-run)
+        if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run == 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        run: npm publish --dry-run --access public
+
+      - name: npm publish
+        if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run != 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        run: npm publish --provenance --access public --tag=${{ steps.ctx.outputs.npm_tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
