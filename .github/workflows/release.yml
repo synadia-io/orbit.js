@@ -102,7 +102,7 @@ jobs:
       - uses: actions/setup-node@v6
         if: steps.ctx.outputs.has_npm == 'true'
         with:
-          node-version: 25.x
+          node-version: 24.x
           registry-url: "https://registry.npmjs.org"
 
       - name: jsr test
@@ -129,10 +129,10 @@ jobs:
           npm install
           npm run build
 
-      - name: npm publish (dry-run)
+      - name: npm pack (dry-run)
         if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run == 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
-        run: npm publish --dry-run --access public
+        run: npm pack --dry-run
 
       - name: npm publish
         if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run != 'true'
