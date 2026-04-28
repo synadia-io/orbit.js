@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.f.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            counters: counters/**
+            messagepipeline: messagepipeline/**
+            muxsub: muxsub/**
+
+  test:
+    needs: detect
+    if: needs.detect.outputs.modules != '[]'
+    runs-on: ubuntu-latest
+    environment: CI
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(needs.detect.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: 2.6.x
+
+      - name: lint
+        working-directory: ${{ matrix.module }}
+        run: deno fmt --check --ignore=docs/
+
+      - name: test
+        working-directory: ${{ matrix.module }}
+        env:
+          TMPDIR: ${{ runner.temp }}
+          CI: true
+        run: deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov
