@@ -32,12 +32,12 @@
   },
   "description": "jetstream counter streams",
   "dependencies": {
-    "@nats-io/nats-core": "3.2.0",
-    "@nats-io/jetstream": "3.2.0"
+    "@nats-io/nats-core": "3.3.1",
+    "@nats-io/jetstream": "3.3.1"
   },
   "devDependencies": {
-    "@types/node": "^24.5.0",
+    "@types/node": "^24.12.2",
     "shx": "^0.4.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
