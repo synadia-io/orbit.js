@@ -22,6 +22,7 @@ jobs:
             counters: counters/**
             messagepipeline: messagepipeline/**
             muxsub: muxsub/**
+            fastingest: fastingest/**
 
   test:
     needs: detect
