@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-import { wsconnect } from "@nats-io/nats-core";
+import "./connect.ts";
+
 import { jetstreamManager } from "@nats-io/jetstream";
 import {
   type FastIngest,
@@ -22,8 +23,7 @@ import {
   startFastIngest,
 } from "../src/mod.ts";
 import { assertEquals, assertExists } from "@std/assert";
-
-const url = Deno.env.get("NATS_URL") ?? "wss://demo.nats.io:8443";
+import { cleanup, jetstreamServerConf, notCompatible, setup } from "@nats-io/nst";
 
 Deno.test("fastingest - exports", () => {
   assertEquals(typeof startFastIngest, "function");
@@ -34,25 +34,17 @@ Deno.test("fastingest - exports", () => {
 });
 
 Deno.test("fastingest - basics", async () => {
-  const nc = await wsconnect({ servers: url });
-  const jsm = await jetstreamManager(nc);
-
-  try {
-    await jsm.streams.delete("fibatch").catch(() => {});
-    await jsm.streams.add({
-      name: "fibatch",
-      subjects: ["fi"],
-      allow_batched: true,
-    });
-  } catch (err) {
-    const msg = (err as Error).message ?? "";
-    if (msg.includes("allow_batched") || msg.includes("invalid JSON")) {
-      console.warn(`skipping: server does not support allow_batched (${url})`);
-      await nc.close();
-      return;
-    }
-    throw err;
+  const { ns, nc } = await setup(jetstreamServerConf({}));
+  if (await notCompatible(ns, nc, "2.14.0")) {
+    return;
   }
+
+  const jsm = await jetstreamManager(nc);
+  await jsm.streams.add({
+    name: "fibatch",
+    subjects: ["fi"],
+    allow_batched: true,
+  });
 
   const fi = await startFastIngest(nc, "fi", "1", {
     allowGaps: false,
@@ -67,6 +59,5 @@ Deno.test("fastingest - basics", async () => {
   assertEquals(ack.batch, fi.batch);
   assertEquals(ack.count, 5);
 
-  await jsm.streams.delete("fibatch").catch(() => {});
-  await nc.close();
+  await cleanup(ns, nc);
 });

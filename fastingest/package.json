@@ -32,11 +32,11 @@
   },
   "description": "fastingest - re-export of jetstream fast ingest batch publish API",
   "dependencies": {
-    "@nats-io/nats-core": "3.4.0-0",
-    "@nats-io/jetstream": "3.4.0-0"
+    "@nats-io/nats-core": "3.4.0-2",
+    "@nats-io/jetstream": "3.4.0-2"
   },
   "devDependencies": {
-    "@types/node": "^24.12.2",
+    "@types/node": "^25.6.2",
     "shx": "^0.4.0",
     "typescript": "^5.9.3"
   }
