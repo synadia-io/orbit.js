@@ -32,8 +32,8 @@
   },
   "description": "jetstream counter streams",
   "dependencies": {
-    "@nats-io/nats-core": "3.3.1",
-    "@nats-io/jetstream": "3.3.1"
+    "@nats-io/nats-core": "3.4.0",
+    "@nats-io/jetstream": "3.4.0"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",
