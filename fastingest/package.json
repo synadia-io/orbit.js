@@ -1,6 +1,6 @@
 {
   "name": "@synadiaorbit/fastingest",
-  "version": "0.1.0-1",
+  "version": "0.1.0-2",
   "files": [
     "lib/",
     "LICENSE",

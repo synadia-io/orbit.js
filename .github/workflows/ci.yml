@@ -43,7 +43,6 @@ jobs:
           deno-version: 2.7.x
 
       - name: install nats-server
-        if: matrix.module == 'fastingest'
         uses: aricart/install-binary@v2.0.0
         with:
           repo: nats-io/nats-server
