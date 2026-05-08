@@ -16,25 +16,19 @@
 import "./connect.ts";
 
 import { jetstreamManager } from "@nats-io/jetstream";
-import {
-  type FastIngest,
-  type FastIngestOptions,
-  type FastIngestProgress,
-  startFastIngest,
-} from "../src/mod.ts";
+import { type FastIngestOptions, startFastIngest } from "../src/mod.ts";
 import { assertEquals, assertExists } from "@std/assert";
-import { cleanup, jetstreamServerConf, notCompatible, setup } from "@nats-io/nst";
+import { jetstreamServerConf, notCompatible, setup } from "@nats-io/nst";
 
 Deno.test("fastingest - exports", () => {
   assertEquals(typeof startFastIngest, "function");
   const _o: Partial<FastIngestOptions> = { allowGaps: false };
-  const _f: FastIngest | null = null;
-  const _p: FastIngestProgress | null = null;
   assertExists(_o);
 });
 
 Deno.test("fastingest - basics", async () => {
-  const { ns, nc } = await setup(jetstreamServerConf({}));
+  await using ctx = await setup(jetstreamServerConf({}));
+  const { ns, nc } = ctx;
   if (await notCompatible(ns, nc, "2.14.0")) {
     return;
   }
@@ -58,6 +52,5 @@ Deno.test("fastingest - basics", async () => {
   assertEquals(ack.stream, "fibatch");
   assertEquals(ack.batch, fi.batch);
   assertEquals(ack.count, 5);
-
-  await cleanup(ns, nc);
+  assertEquals(ack.seq, 5);
 });
