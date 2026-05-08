@@ -1,7 +1,6 @@
 # counters
 
 [![License](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://github.com/synadia-io/orbit.js/blob/main/LICENSE)
-[![counters](https://github.com/synadia-io/orbit.js/actions/workflows/counters.yml/badge.svg)](https://github.com/synadia-io/orbit.js/actions/workflows/counters.yml)
 [![JSR](https://jsr.io/badges/@synadiaorbit/counters)](https://jsr.io/@synadiaorbit/counters)
 [![JSR Score](https://jsr.io/badges/@synadiaorbit/counters/score)](https://jsr.io/@synadiaorbit/counters)
 [![NPM Version](https://img.shields.io/npm/v/%40synadiaorbit%2Fcounters)](https://www.npmjs.com/package/@synadiaorbit/counters)

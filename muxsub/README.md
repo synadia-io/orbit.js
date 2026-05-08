@@ -1,7 +1,6 @@
 # MuxSub
 
 [![License](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://github.com/synadia-io/orbit.js/blob/main/LICENSE)
-[![muxsub](https://github.com/synadia-io/orbit.js/actions/workflows/muxsub.yml/badge.svg)](https://github.com/synadia-io/orbit.js/actions/workflows/muxsub.yml)
 [![JSR](https://jsr.io/badges/@synadiaorbit/muxsub)](https://jsr.io/@synadiaorbit/muxsub)
 [![JSR Score](https://jsr.io/badges/@synadiaorbit/muxsub/score)](https://jsr.io/@synadiaorbit/muxsub)
 [![NPM Version](https://img.shields.io/npm/v/%40synadiaorbit%2Fmuxsub)](https://www.npmjs.com/package/@synadiaorbit/muxsub)
