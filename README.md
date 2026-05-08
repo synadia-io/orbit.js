@@ -22,3 +22,4 @@ This is a list of the current utilities hosted here
 | MuxSub          | A NATS multiplexing subscription utility      | [README.md](muxsub/README.md)          |
 | MessagePipeline | Middleware transformations for NATS messages  | [README.md](messagepipeline/README.md) |
 | Counters        | JetStream-based atomic counter implementation | [README.md](counters/README.md)        |
+| FastIngest      | JetStream fast-ingest batch publish API       | [README.md](fastingest/README.md)      |

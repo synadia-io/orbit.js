@@ -1,6 +1,6 @@
 {
-  "name": "@synadiaorbit/messagepipeline",
-  "version": "1.0.0",
+  "name": "@synadiaorbit/fastingest",
+  "version": "0.1.0-0",
   "files": [
     "lib/",
     "LICENSE",
@@ -30,10 +30,10 @@
   "author": {
     "name": "Synadia Communications, Inc."
   },
-  "description": "messagepipeline - pipeline middleware for NATS subscriptions",
+  "description": "fastingest - re-export of jetstream fast ingest batch publish API",
   "dependencies": {
-    "@nats-io/nats-core": "3.3.1",
-    "@nats-io/services": "3.3.1"
+    "@nats-io/nats-core": "3.4.0-2",
+    "@nats-io/jetstream": "3.4.0-2"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",
