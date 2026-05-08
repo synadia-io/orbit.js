@@ -1,7 +1,6 @@
 # MessagePipeline
 
 [![License](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://github.com/synadia-io/orbit.js/blob/main/LICENSE)
-[![messagepipeline](https://github.com/synadia-io/orbit.js/actions/workflows/messagepipeline.yml/badge.svg)](https://github.com/synadia-io/orbit.js/actions/workflows/messagepipeline.yml)
 [![JSR](https://jsr.io/badges/@synadiaorbit/messagepipeline)](https://jsr.io/@synadiaorbit/messagepipeline)
 [![JSR Score](https://jsr.io/badges/@synadiaorbit/messagepipeline/score)](https://jsr.io/@synadiaorbit/messagepipeline)
 [![NPM Version](https://img.shields.io/npm/v/%40synadiaorbit%2Fmessagepipeline)](https://www.npmjs.com/package/@synadiaorbit/messagepipeline)
