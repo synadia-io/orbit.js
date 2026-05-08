@@ -1,5 +1,11 @@
 # fastingest
 
+[![License](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://github.com/synadia-io/orbit.js/blob/main/LICENSE)
+[![JSR](https://jsr.io/badges/@synadiaorbit/fastingest)](https://jsr.io/@synadiaorbit/fastingest)
+[![JSR Score](https://jsr.io/badges/@synadiaorbit/fastingest/score)](https://jsr.io/@synadiaorbit/fastingest/score)
+[![NPM Version](https://img.shields.io/npm/v/%40synadiaorbit%2Ffastingest)](https://www.npmjs.com/package/@synadiaorbit/fastingest)
+[![NPM Downloads](https://img.shields.io/npm/dt/%40synadiaorbit%2Ffastingest)](https://www.npmjs.com/package/@synadiaorbit/fastingest)
+
 High-throughput batch publish to NATS JetStream. Re-exports the fast-ingest API
 from `@nats-io/jetstream/internal` as a stable orbit surface while the upstream
 API is still considered internal.
