@@ -1,5 +1,0 @@
-{
-  "name": "@synadiaorbit/nhgc",
-  "version": "0.0.4",
-  "exports": "./mod.ts"
-}

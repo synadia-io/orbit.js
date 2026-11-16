@@ -20,7 +20,7 @@ import {
   assertExists,
   assertRejects,
   fail,
-} from "jsr:@std/assert";
+} from "@std/assert";
 import { newNHG } from "./mod.ts";
 import { getConnectionDetails, randomKvName } from "./credentials.ts";
 import type { KvChangeEvent } from "./types.ts";

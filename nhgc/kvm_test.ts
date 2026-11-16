@@ -14,11 +14,7 @@
  */
 
 import { newNHG } from "./mod.ts";
-import {
-  assertArrayIncludes,
-  assertEquals,
-  assertRejects,
-} from "jsr:@std/assert";
+import { assertArrayIncludes, assertEquals, assertRejects } from "@std/assert";
 import { getConnectionDetails, randomKvName } from "./credentials.ts";
 
 Deno.test("kvm - add", async () => {
