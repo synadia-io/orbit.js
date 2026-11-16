@@ -15,7 +15,12 @@
 import { headers, wsconnect } from "@nats-io/nats-core";
 import type { Msg } from "../src/mod.ts";
 import { MutableMsg, Pipeline } from "../src/mod.ts";
-import { assertEquals, assertExists, assertThrows } from "@std/assert";
+import {
+  assertEquals,
+  assertExists,
+  assertRejects,
+  assertThrows,
+} from "@std/assert";
 import { nuid, syncIterator } from "@nats-io/nats-core";
 
 Deno.test("mm - copies values", async () => {
@@ -60,6 +65,53 @@ Deno.test("mm - publisher must be set", () => {
     Error,
     "publisher is not set",
   );
+});
+
+Deno.test("mm - respondRequest needs a publisher and a reply", async () => {
+  const mm = new MutableMsg();
+  await assertRejects(
+    () => mm.respondRequest(),
+    Error,
+    "publisher is not set",
+  );
+  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  mm.publisher = nc;
+  await assertRejects(
+    () => mm.respondRequest(),
+    Error,
+    "reply is not set",
+  );
+  await nc.close();
+});
+
+Deno.test("mm - respondRequest", async () => {
+  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  const subj = nuid.next();
+
+  // one responder uses the connection as its publisher, the other the
+  // publisher of the message it received
+  const answers: string[] = [];
+  const done = (async () => {
+    let i = 0;
+    for await (const m of nc.subscribe(subj, { max: 2 })) {
+      const mm = i++ === 0 ? new MutableMsg() : MutableMsg.fromMsg(m);
+      if (i === 1) {
+        mm.publisher = nc;
+        mm.reply = m.reply!;
+      }
+      const r = await mm.respondRequest("question");
+      answers.push(r.string());
+    }
+  })();
+
+  for (let i = 0; i < 2; i++) {
+    const r = await nc.request(subj);
+    assertEquals(r.string(), "question");
+    r.respond(`answer ${i}`);
+  }
+  await done;
+  assertEquals(answers, ["answer 0", "answer 1"]);
+  await nc.close();
 });
 
 Deno.test("mm - respond", async () => {

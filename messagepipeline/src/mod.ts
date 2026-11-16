@@ -23,6 +23,7 @@ import type {
   Payload,
   Publisher,
   PublishOptions,
+  RequestOptions,
   ReviverFn,
 } from "@nats-io/nats-core/internal";
 
@@ -37,6 +38,16 @@ export type {
 } from "@nats-io/nats-core";
 
 import { Empty } from "@nats-io/nats-core/internal";
+
+// the publisher of a received message also requests on the connection's mux
+// inbox; nats-core doesn't export this interface
+type Replier = Publisher & {
+  pubRequest(
+    subject: string,
+    data: Payload,
+    opts: Partial<RequestOptions> & { timeout: number },
+  ): Promise<Msg>;
+};
 
 /**
  * MutableMsg is a mutable implementation of the NATS Msg interface.
@@ -187,6 +198,40 @@ export class MutableMsg implements Msg {
       return true;
     }
     throw new Error("publisher is not set");
+  }
+
+  /**
+   * Responds to the message with a request, resolving with the reply the
+   * requester sends back. The request goes to the message's reply subject.
+   * @param payload - The data to send in the request.
+   * @param opts - Request options; `timeout` defaults to 2000 milliseconds.
+   * @returns A promise that resolves with the requester's reply, or rejects if
+   * the publisher or the reply subject is not set.
+   */
+  respondRequest(
+    payload?: Payload,
+    opts: Partial<Omit<RequestOptions, "noMux" | "reply">> = {},
+  ): Promise<Msg> {
+    const p = this.publisher;
+    if (!p) {
+      return Promise.reject(new Error("publisher is not set"));
+    }
+    if (!this.reply) {
+      return Promise.reject(new Error("reply is not set"));
+    }
+    const ro = {
+      timeout: opts.timeout || 2000,
+      headers: opts.headers,
+      traceDestination: opts.traceDestination,
+      traceOnly: opts.traceOnly,
+    };
+    // the publisher of a received message is the connection's protocol,
+    // which requests on its mux inbox; a connection makes the request itself.
+    // check pubRequest first: the protocol also has an unrelated request()
+    if (typeof (p as Replier).pubRequest === "function") {
+      return (p as Replier).pubRequest(this.reply, payload ?? Empty, ro);
+    }
+    return (p as NatsConnection).request(this.reply, payload, ro);
   }
 
   /**
