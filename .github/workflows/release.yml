@@ -55,7 +55,12 @@ jobs:
             MOD="${REF%%/v*}"
             VER="${REF##*/v}"
             DRY="false"
-            NPM_TAG="latest"
+            # prereleases (1.2.3-0) go to next, so they don't become latest
+            if [[ "$VER" == *-* ]]; then
+              NPM_TAG="next"
+            else
+              NPM_TAG="latest"
+            fi
           fi
           if [ ! -d "$MOD" ]; then
             echo "module dir not found: $MOD"; exit 1
@@ -98,12 +103,12 @@ jobs:
       - uses: denoland/setup-deno@v2
         if: steps.ctx.outputs.has_jsr == 'true'
         with:
-          deno-version: 2.7.x
+          deno-version: 2.9.x
 
       - uses: actions/setup-node@v6
         if: steps.ctx.outputs.has_npm == 'true'
         with:
-          node-version: 25.x
+          node-version: 26.x
           registry-url: "https://registry.npmjs.org"
 
       - name: install nats-server
@@ -115,6 +120,9 @@ jobs:
       - name: jsr test
         if: steps.ctx.outputs.has_jsr == 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
+        env:
+          NHG_APIKEY: ${{ secrets.NHG_APIKEY }}
+          NHG_URL: ${{ secrets.NHG_URL }}
         run: |
           deno test -A
           deno task clean 2>/dev/null || true
@@ -127,7 +135,16 @@ jobs:
       - name: jsr publish
         if: steps.ctx.outputs.has_jsr == 'true' && steps.ctx.outputs.dry_run != 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
-        run: deno publish --allow-dirty
+        shell: bash
+        run: |
+          # skip a version that is already published, so the job can be rerun
+          NAME=$(jq -r .name deno.json)
+          VER="${{ steps.ctx.outputs.version }}"
+          if curl -sf -o /dev/null "https://jsr.io/${NAME}/${VER}_meta.json"; then
+            echo "$NAME@$VER is already on jsr, skipping"
+          else
+            deno publish --allow-dirty
+          fi
 
       - name: npm build
         if: steps.ctx.outputs.has_npm == 'true'
@@ -144,6 +161,15 @@ jobs:
       - name: npm publish
         if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run != 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
-        run: npm publish --provenance --access public --tag=${{ steps.ctx.outputs.npm_tag }}
+        shell: bash
+        run: |
+          # skip a version that is already published, so the job can be rerun
+          NAME=$(jq -r .name package.json)
+          VER="${{ steps.ctx.outputs.version }}"
+          if [ -n "$(npm view "$NAME@$VER" version 2>/dev/null)" ]; then
+            echo "$NAME@$VER is already on npm, skipping"
+          else
+            npm publish --provenance --access public --tag=${{ steps.ctx.outputs.npm_tag }}
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

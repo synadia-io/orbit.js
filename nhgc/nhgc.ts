@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Value } from "./types.ts";
+import type { Value } from "./types.ts";
 
 export interface Http {
   doFetch(

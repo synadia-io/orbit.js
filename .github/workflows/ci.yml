@@ -40,7 +40,11 @@ jobs:
 
       - uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.7.x
+          deno-version: 2.9.x
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26.x
 
       - name: install nats-server
         uses: aricart/install-binary@v2.0.0
@@ -57,4 +61,13 @@ jobs:
         env:
           TMPDIR: ${{ runner.temp }}
           CI: true
-        run: deno test --allow-all --unstable --parallel --fail-fast --coverage=./cov
+        run: deno test --allow-all --parallel --fail-fast --coverage=./cov
+
+      # the npm package is built from the same sources by tsc, which can fail
+      # where deno's checks pass
+      - name: npm build
+        if: hashFiles(format('{0}/package.json', matrix.module)) != ''
+        working-directory: ${{ matrix.module }}
+        run: |
+          npm install
+          npm run build

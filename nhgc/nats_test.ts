@@ -14,9 +14,9 @@
  */
 
 import { newNHG } from "./mod.ts";
-import { delay } from "jsr:@std/async";
+import { delay } from "@std/async";
 import { getConnectionDetails } from "./credentials.ts";
-import { assert, assertEquals, assertExists, fail } from "jsr:@std/assert";
+import { assert, assertEquals, assertExists, fail } from "@std/assert";
 
 Deno.test("nats - pub", async () => {
   const nhg = newNHG(getConnectionDetails());
