@@ -1,6 +1,9 @@
 {
   "name": "@synadiaorbit/counters",
   "version": "1.0.1",
+  "minimumDependencyAge": {
+    "exclude": ["jsr:@nats-io/*", "npm:@nats-io/*"]
+  },
   "exports": {
     ".": "./src/mod.ts"
   },

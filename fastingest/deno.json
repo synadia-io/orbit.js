@@ -1,6 +1,9 @@
 {
   "name": "@synadiaorbit/fastingest",
   "version": "1.0.0",
+  "minimumDependencyAge": {
+    "exclude": ["jsr:@nats-io/*", "npm:@nats-io/*"]
+  },
   "exports": {
     ".": "./src/mod.ts"
   },
