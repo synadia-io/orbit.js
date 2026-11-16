@@ -140,12 +140,12 @@ server's initial flow-control ack. The fourth argument requires `allowGaps` and
 accepts the rest of `FastIngestOptions` plus any `JetStreamPublishOptions`
 (headers, `msgID`, expectations, etc.):
 
-| option                   | meaning                                                                                                                                                                                       |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`allowGaps`**          | Required. `false` → first gap aborts the batch. `true` → gaps reported via `gaps()`, batch keeps accepting messages.                                                                          |
-| **`ackInterval`**        | Maximum messages the client lets the server go between acks. Higher = faster (longer publish window per ack). Server picks anywhere from `1` up to this max based on stream load. Default 10. |
-| **`maxOutstandingAcks`** | How many ack windows the client lets sit unacked before pausing. Effective in-flight messages = `ackInterval * maxOutstandingAcks`. Default 2; values outside 1–3 are clamped.                |
-| **`inboxPrefix`**        | Subject prefix for the batch's reply inbox. Default `_INBOX`.                                                                                                                                 |
+| option                   | meaning                                                                                                                                                                                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`allowGaps`**          | Required. `false` → first gap aborts the batch. `true` → gaps reported via `gaps()`, batch keeps accepting messages.                                                                                                                     |
+| **`ackInterval`**        | Maximum messages the client lets the server go between acks. Higher = faster (longer publish window per ack). Server picks anywhere from `1` up to this max based on stream load. Default 10.                                            |
+| **`maxOutstandingAcks`** | How many ack windows the client lets sit unacked before pausing. Effective in-flight messages = `ackInterval * maxOutstandingAcks`. Default 2; must be an integer from 1 to 3, other values are rejected with an `InvalidArgumentError`. |
+| **`inboxPrefix`**        | Subject prefix for the batch's reply inbox. Default `_INBOX`.                                                                                                                                                                            |
 
 ```ts
 const fi = await startFastIngest(nc, "orders.created", firstOrder, {
