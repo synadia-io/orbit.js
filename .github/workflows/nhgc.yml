@@ -38,6 +38,8 @@ jobs:
         run: |
           deno fmt --check
           deno lint
+          # every export needs JSDoc, jsr builds the module's api docs from it
+          deno doc --lint mod.ts
 
       - name: Test Deno Module
         working-directory: nhgc
