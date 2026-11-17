@@ -119,7 +119,10 @@ export type Counters = {
    * for await (const v of values) {
    *   console.log(v);
    * }
-   * const all = await counters.values("metrics.*");
+   * // a wildcard selects every counter under metrics
+   * for await (const v of await counters.values("metrics.*")) {
+   *   console.log(v);
+   * }
    * ```
    */
   values(
