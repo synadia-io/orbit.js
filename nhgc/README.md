@@ -27,7 +27,16 @@ deno add @synadiaorbit/nhgc
 
 #### Node.js
 
-If you want to run in Node.js, you can:
+Node.js 22 and later has an experimental `EventSource`, enabled with the
+`--experimental-eventsource` flag:
+
+```sh
+npx jsr add @synadiaorbit/nhgc
+node --experimental-eventsource app.js
+```
+
+Without the flag, or on older versions of Node.js (and on Bun, which doesn't
+provide `EventSource`), use a polyfill:
 
 ```sh
 npx jsr add @synadiaorbit/nhgc

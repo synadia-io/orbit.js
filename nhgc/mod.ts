@@ -19,8 +19,10 @@
  *
  * {@link newNHG} takes the gateway URL and an API key. Requests are made with
  * `fetch`, and subscriptions and KV watches are server-sent events
- * (`EventSource`), so the client runs anywhere both are available, such as
- * browsers, Deno and Bun. Node.js needs an `EventSource` polyfill.
+ * (`EventSource`), so the client runs anywhere both are available: browsers
+ * and Deno. Node.js 22 and later has an experimental `EventSource` behind the
+ * `--experimental-eventsource` flag; without the flag, on older versions, or
+ * on Bun, install an `EventSource` polyfill.
  *
  * @example
  * ```ts
