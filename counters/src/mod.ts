@@ -47,9 +47,11 @@ export type Counters = {
   increment(name: string, delta: bigint | number): Promise<bigint>;
   /**
    * Get the current value for a counter
-   * @param name - The counter name/subject
+   * @param name - The counter name/subject, not a wildcard (use values())
    * @param seq - Optional sequence number to get historical value
-   * @returns The current value of the counter, or null if not found
+   * @returns The value of the named counter, or null if not found. Also null
+   *   when the message found is for another counter, such as a seq holding a
+   *   revision of a different counter, or a wildcard name
    */
   value(name: string, seq?: number): Promise<bigint | null>;
   /**
@@ -195,6 +197,13 @@ class CountersImpl implements Counters {
   value(counter: string, seq = 0): Promise<bigint | null> {
     return this.getCounter(counter, seq).then((c) => {
       if (c === null) {
+        return null;
+      }
+      // only return a value for the named counter: a get by seq returns
+      // whatever is stored there, and a wildcard name matches the last
+      // counter written. unlike a Counter, a value has no subject the caller
+      // could check
+      if (c.subject !== counter) {
         return null;
       }
       return c.value;
