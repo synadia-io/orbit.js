@@ -4,7 +4,8 @@ name: release
 # module, checks that both registries accept it, and then publishes it to jsr
 # and npm. versions with a qualifier (1.0.2-0) go to the npm tag next. a
 # version already on a registry is skipped there, so a failed release can be
-# rerun.
+# rerun. npm publishes with trusted publishing (oidc), so each npm package
+# must trust this workflow (release.yml) and the CI environment.
 
 on:
   push:
@@ -168,7 +169,3 @@ jobs:
           else
             npm publish --provenance --access public --tag=${{ steps.ctx.outputs.npm_tag }}
           fi
-        env:
-          # npm uses trusted publishing (oidc) when the package has it
-          # configured, and falls back to the token otherwise
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
