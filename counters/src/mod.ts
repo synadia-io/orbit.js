@@ -13,6 +13,51 @@
  * limitations under the License.
  */
 
+/**
+ * JetStream counters (ADR-49): order-independent counters kept in a stream.
+ *
+ * NATS server 2.12 added counter streams, where each subject is a counter and
+ * a publish carries an increment instead of a payload. The server adds it to
+ * the subject's last value, so counters are a CRDT: increments can arrive in
+ * any order, and a stream that sources other counter streams adds their
+ * totals across clusters and super-clusters.
+ *
+ * {@link NewCounter} binds to an existing stream, created with
+ * `allow_msg_counter` and `allow_direct`. A counter stream only holds
+ * counters.
+ *
+ * @example
+ * ```ts
+ * import { nanos, nuid, wsconnect } from "@nats-io/nats-core";
+ * import { jetstreamManager } from "@nats-io/jetstream";
+ * import { NewCounter } from "@synadiaorbit/counters";
+ *
+ * const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+ * const jsm = await jetstreamManager(nc);
+ * // demo.nats.io is shared, so use a stream name of your own
+ * const stream = `counters_${nuid.next()}`;
+ * await jsm.streams.add({
+ *   name: stream,
+ *   subjects: [`${stream}.>`],
+ *   allow_msg_counter: true,
+ *   allow_direct: true,
+ *   max_age: nanos(2 * 60 * 1000),
+ * });
+ *
+ * try {
+ *   const counters = NewCounter(nc, stream);
+ *   await counters.increment(`${stream}.logins`, 1);
+ *   console.log(await counters.increment(`${stream}.logins`, 10)); // 11n
+ *   console.log(await counters.value(`${stream}.logins`)); // 11n
+ * } finally {
+ *   await jsm.streams.delete(stream);
+ *   await nc.close();
+ * }
+ * ```
+ *
+ * @module
+ */
+
 import type {
   DirectMsgRequest,
   JetStreamClient,
@@ -67,8 +112,17 @@ export type Counters = {
    * @returns An iterator with the latest values for matched counters
    * @example
    * ```typescript
+   * import type { Counters } from "@synadiaorbit/counters";
+   * declare const counters: Counters;
+   *
    * const values = await counters.values(["metrics.cpu", "metrics.memory"]);
-   * const wildcardValues = await counters.values("metrics.*");
+   * for await (const v of values) {
+   *   console.log(v);
+   * }
+   * // a wildcard selects every counter under metrics
+   * for await (const v of await counters.values("metrics.*")) {
+   *   console.log(v);
+   * }
    * ```
    */
   values(
@@ -81,9 +135,12 @@ export type Counters = {
    * @returns An iterator with Counter objects containing metadata
    * @example
    * ```typescript
-   * const counters = await counters.getCounters(["metrics.cpu", "metrics.memory"]);
-   * for await (const counter of counters) {
-   *   console.log(`${counter.subject}: ${counter.value}`);
+   * import type { Counters } from "@synadiaorbit/counters";
+   * declare const counters: Counters;
+   *
+   * const iter = await counters.getCounters(["metrics.cpu", "metrics.memory"]);
+   * for await (const c of iter) {
+   *   console.log(`${c.subject}: ${c.value}`);
    * }
    * ```
    */
@@ -92,6 +149,10 @@ export type Counters = {
   ): Promise<QueuedIterator<Counter>>;
 };
 
+/**
+ * The ack of a counter increment: a JetStream publish ack with `val`, the
+ * counter's value after the increment, as a decimal string.
+ */
 export type CounterValue = PubAck & {
   val: string;
 };
@@ -104,10 +165,20 @@ export type CounterValue = PubAck & {
 export type CounterSources = Record<string, Record<string, bigint>>;
 
 /**
- * A JetStream Counter
+ * A revision of a counter, as returned by {@link Counters.getCounter} and
+ * {@link Counters.getCounters}.
  */
 export class Counter {
+  /**
+   * The stored message holding the counter revision.
+   */
   m: Msg;
+
+  /**
+   * Wraps the stored message of a counter revision. Counters are returned by
+   * {@link Counters}, not created directly.
+   * @param m - the stored message
+   */
   constructor(m: Msg) {
     this.m = m;
   }
