@@ -165,3 +165,34 @@ Deno.test("counter - timestamp", async () => {
   }
   assertEquals(iter.getProcessed(), 2);
 });
+
+Deno.test("counter - value only for the named counter", async () => {
+  await using ctx = await setup(true);
+  const { nc } = ctx;
+
+  const jsm = await jetstreamManager(nc);
+  await jsm.streams.add({
+    name: "seqs",
+    subjects: ["seqs.>"],
+    allow_msg_counter: true,
+    allow_direct: true,
+  });
+
+  const c = NewCounter(nc, "seqs");
+  await c.increment("seqs.a", 1);
+  await c.increment("seqs.b", 10);
+
+  // seq 2 is a revision of seqs.b, not seqs.a
+  assertEquals(await c.value("seqs.a", 2), null);
+
+  // the matching counter still resolves
+  assertEquals(await c.value("seqs.b", 2), 10n);
+  assertEquals(await c.value("seqs.a", 1), 1n);
+
+  // a sequence that doesn't exist
+  assertEquals(await c.value("seqs.a", 100), null);
+
+  // a wildcard isn't a counter name, the batch apis take wildcards
+  assertEquals(await c.value("seqs.*"), null);
+  assertEquals(await c.value("seqs.a"), 1n);
+});
