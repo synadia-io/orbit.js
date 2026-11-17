@@ -56,6 +56,11 @@ jobs:
         working-directory: ${{ matrix.module }}
         run: deno fmt --check --ignore=docs/
 
+      # every export needs JSDoc, jsr builds the module's api docs from it
+      - name: doc lint
+        working-directory: ${{ matrix.module }}
+        run: deno doc --lint "$(jq -r '.exports | if type == "string" then . else .["."] end' deno.json)"
+
       - name: test
         working-directory: ${{ matrix.module }}
         env:
