@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { headers, wsconnect } from "@nats-io/nats-core";
+import { headers } from "@nats-io/nats-core";
 import type { Msg } from "../src/mod.ts";
 import { MutableMsg, Pipeline } from "../src/mod.ts";
 import {
@@ -22,9 +22,11 @@ import {
   assertThrows,
 } from "@std/assert";
 import { nuid, syncIterator } from "@nats-io/nats-core";
+import { setup } from "./server.ts";
 
 Deno.test("mm - copies values", async () => {
-  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  await using ctx = await setup();
+  const { nc } = ctx;
   const subj = nuid.next();
   const reply = subj.split("").reverse().join();
   const sub = syncIterator<Msg>(nc.subscribe(subj));
@@ -44,8 +46,6 @@ Deno.test("mm - copies values", async () => {
 
   assertEquals(ms.respond(), true);
   assertEquals(ms.respondError(400, "hello"), true);
-
-  await nc.close();
 });
 
 Deno.test("mm - publisher must be set", () => {
@@ -74,18 +74,19 @@ Deno.test("mm - respondRequest needs a publisher and a reply", async () => {
     Error,
     "publisher is not set",
   );
-  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  await using ctx = await setup();
+  const { nc } = ctx;
   mm.publisher = nc;
   await assertRejects(
     () => mm.respondRequest(),
     Error,
     "reply is not set",
   );
-  await nc.close();
 });
 
 Deno.test("mm - respondRequest", async () => {
-  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  await using ctx = await setup();
+  const { nc } = ctx;
   const subj = nuid.next();
 
   // one responder uses the connection as its publisher, the other the
@@ -111,11 +112,11 @@ Deno.test("mm - respondRequest", async () => {
   }
   await done;
   assertEquals(answers, ["answer 0", "answer 1"]);
-  await nc.close();
 });
 
 Deno.test("mm - respond", async () => {
-  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  await using ctx = await setup();
+  const { nc } = ctx;
   const subj = nuid.next();
 
   (async () => {
@@ -128,7 +129,6 @@ Deno.test("mm - respond", async () => {
   })().catch();
 
   await nc.request(subj);
-  await nc.close();
 });
 
 Deno.test("mm - data", () => {
@@ -185,7 +185,8 @@ Deno.test("pipeline", async () => {
   }
 
   const pipeline = new Pipeline(toJSON);
-  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  await using ctx = await setup();
+  const { nc } = ctx;
   const subj = nuid.next();
   const sub = nc.subscribe(subj);
   (async () => {
@@ -206,8 +207,6 @@ Deno.test("pipeline", async () => {
 
   r = await nc.request(subj, "");
   assertEquals(r.json(), { error: "message is empty" });
-
-  await nc.close();
 });
 
 Deno.test("pipeline error", async () => {
@@ -216,7 +215,8 @@ Deno.test("pipeline error", async () => {
   }
 
   const pipeline = new Pipeline(failIt);
-  const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+  await using ctx = await setup();
+  const { nc } = ctx;
   const subj = nuid.next();
   const sub = nc.subscribe(subj);
   (async () => {
@@ -230,6 +230,4 @@ Deno.test("pipeline error", async () => {
 
   const r = await nc.request(subj, "hello!");
   assertEquals(r.string(), "zonk!");
-
-  await nc.close();
 });

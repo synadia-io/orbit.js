@@ -24,6 +24,9 @@ workspace: run commands from the module's directory.
 
 - `src/mod.ts` — the public API
 - `tests/` — Deno tests (`*_test.ts`); nhgc keeps its tests next to the sources
+- `tests/server.ts` — `setup()` starts a nats-server for the test with
+  `@nats-io/nst` (WebSocket, optionally JetStream) and connects with
+  `wsconnect`; CI installs `nats-server`
 - `deno.json` — jsr name, version, imports and publish excludes
 - `package.json`, `tsconfig.json`, `package-lock.json` — the npm build
 - `README.md`, `LICENSE`
@@ -35,7 +38,7 @@ Deno is the primary toolchain. From a module's directory:
 ```bash
 deno fmt --check            # formatting (ci runs this)
 deno lint
-deno test -A                # tests; most connect to demo.nats.io
+deno test -A                # tests; each starts its own nats-server
 ```
 
 The npm build compiles the same sources with `tsc`, which can fail where Deno's

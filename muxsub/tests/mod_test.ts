@@ -13,16 +13,15 @@
  * limitations under the License.
  */
 
-import { deferred, wsconnect } from "@nats-io/nats-core";
+import { deferred } from "@nats-io/nats-core";
 import type { Msg } from "@nats-io/nats-core";
 import { MuxSubscription } from "../src/mod.ts";
 import { assertEquals, assertRejects } from "@std/assert";
+import { setup } from "./server.ts";
 
 Deno.test("muxsub", async () => {
-  const nc = await wsconnect({
-    servers: ["wss://demo.nats.io:8443"],
-    debug: true,
-  });
+  await using ctx = await setup();
+  const { nc } = ctx;
 
   const mux = new MuxSubscription(nc);
 
@@ -70,5 +69,4 @@ Deno.test("muxsub", async () => {
   await mux.drain();
   // iter closed!
   await d;
-  await nc.close();
 });
