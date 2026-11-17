@@ -225,6 +225,10 @@ Properties available on counter objects:
 
 - `value: bigint` - The current counter value
 - `delta: bigint` - The increment/decrement amount for this revision
+- `sources: CounterSources` - For a counter that aggregates other counters
+  through stream sources, the last value seen from each source, keyed by source
+  stream and then by the subject in that source. Empty for a counter that isn't
+  sourced
 - `stream: string` - The JetStream stream name
 - `subject: string` - The counter name/subject
 - `seq: number` - The sequence number in the stream
