@@ -19,14 +19,25 @@ while maintaining clean message handling separation.
 ## Installation
 
 ```bash
-# Deno
-deno add @synadiaorbit/muxsub
+# node, bun (esm and commonjs)
+npm install @synadiaorbit/muxsub
 
-# Import in your code
+# deno
+deno add jsr:@synadiaorbit/muxsub
+```
+
+The npm package works with `import` and `require`, and requires Node.js 22 or
+later.
+
+```typescript
 import { MuxSubscription } from "@synadiaorbit/muxsub";
 ```
 
 ## Usage
+
+The example connects to the shared `demo.nats.io` server with `wsconnect`, which
+works in every runtime; any nats.js transport works too, see
+[runtimes](https://github.com/nats-io/nats.js/blob/main/runtimes.md).
 
 ### Basic Example
 
@@ -34,7 +45,7 @@ import { MuxSubscription } from "@synadiaorbit/muxsub";
 import { wsconnect } from "@nats-io/nats-core";
 import { MuxSubscription } from "@synadiaorbit/muxsub";
 
-const nc = await wsconnect({ servers: ["nats://localhost:4222"] });
+const nc = await wsconnect({ servers: ["wss://demo.nats.io:8443"] });
 const mux = new MuxSubscription(nc);
 
 // Callback-based handler
@@ -44,14 +55,15 @@ mux.newMuxInbox("foo.bar", (_, msg) => {
 
 // Iterator-based handler
 const iterator = mux.newMuxInbox("responses");
-for await (const msg of iterator) {
-  console.log("Response:", msg.subject);
-  break; // Exit after first message
-}
 
 // Publish to handlers
 nc.publish(mux.subjectFor("foo.bar"), "hello");
 nc.publish(mux.subjectFor("responses"), "world");
+
+for await (const msg of iterator) {
+  console.log("Response:", msg.subject);
+  break; // Exit after first message
+}
 
 await mux.drain();
 await nc.close();
@@ -80,6 +92,7 @@ await nc.close();
 - `subjectFor(partialSubject: string)` - Get the full NATS subject for
   publishing
 - `tokenFor(subject: string)` - Extract the token from a full subject
+- `getSubject()` - The subscription's subject (`{prefix}.>`)
 
 ##### Subscription Control
 
