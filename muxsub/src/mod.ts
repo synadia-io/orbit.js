@@ -12,6 +12,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Many message handlers sharing one subscription.
+ *
+ * A {@link MuxSubscription} subscribes once, to `<inbox>.>` on a generated
+ * inbox, and routes each message to the handler registered for the rest of its
+ * subject. A handler is either a callback or an async iterator. Publish to
+ * {@link MuxSubscription.subjectFor} to reach a handler. This keeps the number
+ * of subscriptions down when an application needs many short-lived reply
+ * subjects, such as for concurrent requests.
+ *
+ * @example
+ * ```ts
+ * import { wsconnect } from "@nats-io/nats-core";
+ * import { MuxSubscription } from "@synadiaorbit/muxsub";
+ *
+ * const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+ * const mux = new MuxSubscription(nc);
+ *
+ * // a handler as a callback
+ * mux.newMuxInbox("orders", (_, m) => {
+ *   console.log("order:", m.string());
+ * });
+ * // a handler as an async iterator
+ * const replies = mux.newMuxInbox("replies");
+ *
+ * nc.publish(mux.subjectFor("orders"), "order 1");
+ * nc.publish(mux.subjectFor("replies"), "reply 1");
+ *
+ * for await (const m of replies) {
+ *   console.log("reply:", m.string());
+ *   break;
+ * }
+ * await mux.drain();
+ * await nc.close();
+ * ```
+ *
+ * @module
+ */
+
 import type {
   Msg,
   MsgCallback,
