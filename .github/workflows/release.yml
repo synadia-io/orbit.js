@@ -1,5 +1,12 @@
 name: release
 
+# pushing a tag <module>/v<version> (for example counters/v1.0.2) tests the
+# module, checks that both registries accept it, and then publishes it to jsr
+# and npm. versions with a qualifier (1.0.2-0) go to the npm tag next. a
+# version already on a registry is skipped there, so a failed release can be
+# rerun. npm publishes with trusted publishing (oidc), so each npm package
+# must trust this workflow (release.yml) and the CI environment.
+
 on:
   push:
     tags: ["*/v*"]
@@ -10,32 +17,24 @@ on:
         type: choice
         options:
           - counters
+          - fastingest
           - messagepipeline
           - muxsub
           - nhgc
-          - fastingest
       version:
         required: true
         description: "version (no v prefix), e.g. 1.2.3"
-      npm_tag:
-        default: latest
-        type: choice
-        options:
-          - latest
-          - next
-          - beta
-          - rc
       dry_run:
         type: boolean
         default: true
-        description: "build + dry-run publish, skip actual upload"
+        description: "test and dry-run publish, skip the upload"
 
 jobs:
   release:
     runs-on: ubuntu-latest
     environment: CI
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v6
@@ -49,18 +48,17 @@ jobs:
             MOD="${{ inputs.module }}"
             VER="${{ inputs.version }}"
             DRY="${{ inputs.dry_run }}"
-            NPM_TAG="${{ inputs.npm_tag }}"
           else
             REF="${{ github.ref_name }}"
             MOD="${REF%%/v*}"
             VER="${REF##*/v}"
             DRY="false"
-            # prereleases (1.2.3-0) go to next, so they don't become latest
-            if [[ "$VER" == *-* ]]; then
-              NPM_TAG="next"
-            else
-              NPM_TAG="latest"
-            fi
+          fi
+          # qualified versions (1.2.3-0) go to next, so they don't become latest
+          if [[ "$VER" == *-* ]]; then
+            NPM_TAG="next"
+          else
+            NPM_TAG="latest"
           fi
           if [ ! -d "$MOD" ]; then
             echo "module dir not found: $MOD"; exit 1
@@ -82,7 +80,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "::notice::module=$MOD version=$VER dry_run=$DRY npm=$HAS_NPM jsr=$HAS_JSR tag=$NPM_TAG"
 
-      - name: verify versions match tag
+      - name: verify versions match the tag
         working-directory: ${{ steps.ctx.outputs.module }}
         shell: bash
         run: |
@@ -101,7 +99,6 @@ jobs:
           fi
 
       - uses: denoland/setup-deno@v2
-        if: steps.ctx.outputs.has_jsr == 'true'
         with:
           deno-version: 2.9.x
 
@@ -117,7 +114,7 @@ jobs:
           repo: nats-io/nats-server
           name: nats-server
 
-      - name: jsr test
+      - name: test
         if: steps.ctx.outputs.has_jsr == 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
         env:
@@ -127,24 +124,13 @@ jobs:
           deno test -A
           deno task clean 2>/dev/null || true
 
-      - name: jsr publish (dry-run)
-        if: steps.ctx.outputs.has_jsr == 'true' && steps.ctx.outputs.dry_run == 'true'
+      # nothing is published until both registries accept the module, so a
+      # broken npm build doesn't leave a version on jsr only
+
+      - name: jsr dry-run
+        if: steps.ctx.outputs.has_jsr == 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
         run: deno publish --allow-dirty --dry-run
-
-      - name: jsr publish
-        if: steps.ctx.outputs.has_jsr == 'true' && steps.ctx.outputs.dry_run != 'true'
-        working-directory: ${{ steps.ctx.outputs.module }}
-        shell: bash
-        run: |
-          # skip a version that is already published, so the job can be rerun
-          NAME=$(jq -r .name deno.json)
-          VER="${{ steps.ctx.outputs.version }}"
-          if curl -sf -o /dev/null "https://jsr.io/${NAME}/${VER}_meta.json"; then
-            echo "$NAME@$VER is already on jsr, skipping"
-          else
-            deno publish --allow-dirty
-          fi
 
       - name: npm build
         if: steps.ctx.outputs.has_npm == 'true'
@@ -153,17 +139,29 @@ jobs:
           npm install
           npm run build
 
-      - name: npm pack (dry-run)
-        if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run == 'true'
+      - name: npm dry-run
+        if: steps.ctx.outputs.has_npm == 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
         run: npm pack --dry-run
+
+      - name: jsr publish
+        if: steps.ctx.outputs.has_jsr == 'true' && steps.ctx.outputs.dry_run != 'true'
+        working-directory: ${{ steps.ctx.outputs.module }}
+        shell: bash
+        run: |
+          NAME=$(jq -r .name deno.json)
+          VER="${{ steps.ctx.outputs.version }}"
+          if curl -sf -o /dev/null "https://jsr.io/${NAME}/${VER}_meta.json"; then
+            echo "$NAME@$VER is already on jsr, skipping"
+          else
+            deno publish --allow-dirty
+          fi
 
       - name: npm publish
         if: steps.ctx.outputs.has_npm == 'true' && steps.ctx.outputs.dry_run != 'true'
         working-directory: ${{ steps.ctx.outputs.module }}
         shell: bash
         run: |
-          # skip a version that is already published, so the job can be rerun
           NAME=$(jq -r .name package.json)
           VER="${{ steps.ctx.outputs.version }}"
           if [ -n "$(npm view "$NAME@$VER" version 2>/dev/null)" ]; then
@@ -171,5 +169,3 @@ jobs:
           else
             npm publish --provenance --access public --tag=${{ steps.ctx.outputs.npm_tag }}
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
