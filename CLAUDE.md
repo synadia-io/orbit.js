@@ -17,8 +17,7 @@ workspace: run commands from the module's directory.
 | `muxsub/`          | `@synadiaorbit/muxsub`          | jsr, npm   | Multiplexing subscription                     |
 | `nhgc/`            | `@synadiaorbit/nhgc`            | jsr        | Client for the NATS HTTP Gateway (standalone) |
 
-`bin/` holds tooling: `cjs-fix-imports.ts` (used by the npm builds) and
-`create-project-template.ts` (scaffolds a new module).
+`bin/cjs-fix-imports.ts` rewrites the sources' `.ts` imports for the npm builds.
 
 ### Module layout
 
