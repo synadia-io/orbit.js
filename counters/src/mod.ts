@@ -145,7 +145,7 @@ export class Counter {
    * Return the timestamp of the counter
    */
   get timestamp(): string {
-    return this.m.headers?.get("Nats-Timestamp") || "";
+    return this.m.headers?.get("Nats-Time-Stamp") || "";
   }
 
   /**

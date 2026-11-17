@@ -15,7 +15,13 @@
 
 import { jetstreamManager } from "@nats-io/jetstream";
 import { type Counter, NewCounter } from "../src/mod.ts";
-import { assertArrayIncludes, assertEquals, assertExists } from "@std/assert";
+import {
+  assert,
+  assertArrayIncludes,
+  assertEquals,
+  assertExists,
+  assertNotEquals,
+} from "@std/assert";
 import { setup } from "./server.ts";
 
 Deno.test("counter - basics", async () => {
@@ -113,4 +119,51 @@ Deno.test("counter - multiple", async () => {
 
   const c1000 = buf.find((v) => v.subject === "many.1000");
   assertEquals(c1000, undefined);
+});
+
+Deno.test("counter - timestamp", async () => {
+  await using ctx = await setup(true);
+  const { nc } = ctx;
+
+  const jsm = await jetstreamManager(nc);
+  await jsm.streams.add({
+    name: "ts",
+    subjects: ["ts.>"],
+    allow_msg_counter: true,
+    allow_direct: true,
+  });
+
+  const before = Date.now();
+  const c = NewCounter(nc, "ts");
+  await c.increment("ts.a", 1);
+  await c.increment("ts.b", 2);
+  const after = Date.now();
+
+  // the stored message is the reference for the time the server recorded
+  const sm = await jsm.streams.getMessage("ts", { seq: 1 });
+
+  function check(ce: Counter | null, seq: number) {
+    assertExists(ce);
+    assertEquals(ce.seq, seq);
+    assertNotEquals(ce.timestamp, "");
+    assertEquals(Number.isNaN(ce.time.getTime()), false);
+    assert(ce.time.getTime() >= before - 1000);
+    assert(ce.time.getTime() <= after + 1000);
+  }
+
+  // by subject
+  const a = await c.getCounter("ts.a");
+  check(a, 1);
+  assertExists(sm);
+  assertEquals(a!.time.getTime(), sm.time.getTime());
+
+  // by sequence
+  check(await c.getCounter("ts.b", 2), 2);
+
+  // batch
+  const iter = await c.getCounters(["ts.a", "ts.b"]);
+  for await (const ce of iter) {
+    check(ce, ce.subject === "ts.a" ? 1 : 2);
+  }
+  assertEquals(iter.getProcessed(), 2);
 });
