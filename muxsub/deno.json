@@ -1,6 +1,6 @@
 {
   "name": "@synadiaorbit/muxsub",
-  "version": "1.0.0",
+  "version": "1.0.1-0",
   "minimumDependencyAge": {
     "exclude": ["jsr:@nats-io/*", "npm:@nats-io/*"]
   },

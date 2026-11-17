@@ -17,15 +17,13 @@ workspace: run commands from the module's directory.
 | `muxsub/`          | `@synadiaorbit/muxsub`          | jsr, npm   | Multiplexing subscription                     |
 | `nhgc/`            | `@synadiaorbit/nhgc`            | jsr        | Client for the NATS HTTP Gateway (standalone) |
 
-`bin/` holds tooling: `cjs-fix-imports.ts` (used by the npm builds) and
-`create-project-template.ts` (scaffolds a new module).
-
 ### Module layout
 
 - `src/mod.ts` — the public API
 - `tests/` — Deno tests (`*_test.ts`); nhgc keeps its tests next to the sources
 - `deno.json` — jsr name, version, imports and publish excludes
-- `package.json`, `tsconfig.json`, `package-lock.json` — the npm build
+- `package.json`, `tsconfig.json`, `tsconfig.esm.json`, `package-lock.json` —
+  the npm build
 - `README.md`, `LICENSE`
 
 ## Development Commands
@@ -47,10 +45,16 @@ npm run build               # lib/ (gitignored)
 npm run clean
 ```
 
+npm packages are dual ESM/CommonJS, as in nats.js: `tsc` compiles `src/` to
+CommonJS in `lib/` (`tsconfig.json`) and to ESM in `lib/esm/`
+(`tsconfig.esm.json`, plus a `lib/esm/package.json` with `type: module`).
+`exports` sends `import` to `lib/esm/` and `require` to `lib/`, each with its
+own types. Packages require node >= 22.
+
 ## Code Conventions
 
-- Source imports use `.ts` extensions; `bin/cjs-fix-imports.ts` rewrites them
-  for the npm build
+- Source imports use `.ts` extensions; `tsc` rewrites them to `.js`
+  (`rewriteRelativeImportExtensions`)
 - `import type { Foo }` for type-only imports
 - Strict TypeScript; `deno fmt` and `deno lint` are the only formatter and
   linter
