@@ -1,6 +1,6 @@
 {
   "name": "@synadiaorbit/fastingest",
-  "version": "1.0.1-0",
+  "version": "1.0.1",
   "minimumDependencyAge": {
     "exclude": ["jsr:@nats-io/*", "npm:@nats-io/*"]
   },
