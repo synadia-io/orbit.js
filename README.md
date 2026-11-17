@@ -14,12 +14,37 @@ capabilities.
 
 # Utilities
 
-This is a list of the current utilities hosted here
+Each module is versioned and released on its own, to JSR and npm. An
+`incubating` module's API may still change between releases; a `stable` one
+follows semver.
 
-| Module          | Description                                   | Docs                                   |
-| --------------- | --------------------------------------------- | -------------------------------------- |
-| NHGC            | A Javascript client for the NATS HTTP Gateway | [README.md](nhgc/README.md)            |
-| MuxSub          | A NATS multiplexing subscription utility      | [README.md](muxsub/README.md)          |
-| MessagePipeline | Middleware transformations for NATS messages  | [README.md](messagepipeline/README.md) |
-| Counters        | JetStream-based atomic counter implementation | [README.md](counters/README.md)        |
-| FastIngest      | JetStream fast-ingest batch publish API       | [README.md](fastingest/README.md)      |
+<!-- modules:start -->
+
+| Module                                        | Description                                            | Status     | Version                                                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [Counters](counters/README.md)                | Distributed counters built on JetStream streams        | incubating | [![JSR][counters-jsr-image]][counters-jsr-url] [![npm][counters-npm-image]][counters-npm-url]                             |
+| [Fast Ingest](fastingest/README.md)           | High-throughput batch publish to JetStream             | incubating | [![JSR][fastingest-jsr-image]][fastingest-jsr-url] [![npm][fastingest-npm-image]][fastingest-npm-url]                     |
+| [Message Pipeline](messagepipeline/README.md) | Middleware transformations for NATS messages           | stable     | [![JSR][messagepipeline-jsr-image]][messagepipeline-jsr-url] [![npm][messagepipeline-npm-image]][messagepipeline-npm-url] |
+| [MuxSub](muxsub/README.md)                    | Many handlers sharing one inbox subscription           | stable     | [![JSR][muxsub-jsr-image]][muxsub-jsr-url] [![npm][muxsub-npm-image]][muxsub-npm-url]                                     |
+| [NHGC](nhgc/README.md)                        | Client for KV and messaging over the NATS HTTP Gateway | incubating | [![JSR][nhgc-jsr-image]][nhgc-jsr-url]                                                                                    |
+
+[counters-jsr-url]: https://jsr.io/@synadiaorbit/counters/doc
+[counters-jsr-image]: https://jsr.io/badges/@synadiaorbit/counters
+[counters-npm-url]: https://www.npmjs.com/package/@synadiaorbit/counters
+[counters-npm-image]: https://img.shields.io/npm/v/%40synadiaorbit%2Fcounters
+[fastingest-jsr-url]: https://jsr.io/@synadiaorbit/fastingest/doc
+[fastingest-jsr-image]: https://jsr.io/badges/@synadiaorbit/fastingest
+[fastingest-npm-url]: https://www.npmjs.com/package/@synadiaorbit/fastingest
+[fastingest-npm-image]: https://img.shields.io/npm/v/%40synadiaorbit%2Ffastingest
+[messagepipeline-jsr-url]: https://jsr.io/@synadiaorbit/messagepipeline/doc
+[messagepipeline-jsr-image]: https://jsr.io/badges/@synadiaorbit/messagepipeline
+[messagepipeline-npm-url]: https://www.npmjs.com/package/@synadiaorbit/messagepipeline
+[messagepipeline-npm-image]: https://img.shields.io/npm/v/%40synadiaorbit%2Fmessagepipeline
+[muxsub-jsr-url]: https://jsr.io/@synadiaorbit/muxsub/doc
+[muxsub-jsr-image]: https://jsr.io/badges/@synadiaorbit/muxsub
+[muxsub-npm-url]: https://www.npmjs.com/package/@synadiaorbit/muxsub
+[muxsub-npm-image]: https://img.shields.io/npm/v/%40synadiaorbit%2Fmuxsub
+[nhgc-jsr-url]: https://jsr.io/@synadiaorbit/nhgc/doc
+[nhgc-jsr-image]: https://jsr.io/badges/@synadiaorbit/nhgc
+
+<!-- modules:end -->

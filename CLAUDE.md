@@ -9,6 +9,11 @@ Each top-level directory is an independent module, with its own `deno.json`,
 `package.json` (when it is on npm), version, CI and release. There is no
 workspace: run commands from the module's directory.
 
+`modules.json` lists the modules with a description and a status (`stable` or
+`incubating`). The module list in `README.md` is generated from it, run
+`deno run -A bin/readme.ts` after changing it or adding a module. CI fails when
+`README.md` is out of date, or when a module directory isn't in `modules.json`.
+
 | Directory          | Package                         | Registries | Description                                   |
 | ------------------ | ------------------------------- | ---------- | --------------------------------------------- |
 | `counters/`        | `@synadiaorbit/counters`        | jsr, npm   | JetStream-based atomic counters               |
