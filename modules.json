@@ -1,0 +1,27 @@
+{
+  "counters": {
+    "title": "Counters",
+    "description": "Distributed counters built on JetStream streams",
+    "status": "incubating"
+  },
+  "fastingest": {
+    "title": "Fast Ingest",
+    "description": "High-throughput batch publish to JetStream",
+    "status": "incubating"
+  },
+  "messagepipeline": {
+    "title": "Message Pipeline",
+    "description": "Middleware transformations for NATS messages",
+    "status": "stable"
+  },
+  "muxsub": {
+    "title": "MuxSub",
+    "description": "Many handlers sharing one inbox subscription",
+    "status": "stable"
+  },
+  "nhgc": {
+    "title": "NHGC",
+    "description": "Client for KV and messaging over the NATS HTTP Gateway",
+    "status": "incubating"
+  }
+}

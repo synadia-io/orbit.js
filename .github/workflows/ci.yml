@@ -7,6 +7,19 @@ on:
     branches: [main]
 
 jobs:
+  readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: 2.9.x
+      # the module list in README.md is generated from modules.json
+      - name: README.md matches modules.json
+        run: deno run --allow-read --allow-run bin/readme.ts --check
+
   detect:
     runs-on: ubuntu-latest
     outputs:

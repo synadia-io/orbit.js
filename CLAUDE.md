@@ -9,13 +9,15 @@ Each top-level directory is an independent module, with its own `deno.json`,
 `package.json` (when it is on npm), version, CI and release. There is no
 workspace: run commands from the module's directory.
 
-| Directory          | Package                         | Registries | Description                                   |
-| ------------------ | ------------------------------- | ---------- | --------------------------------------------- |
-| `counters/`        | `@synadiaorbit/counters`        | jsr, npm   | JetStream-based atomic counters               |
-| `fastingest/`      | `@synadiaorbit/fastingest`      | jsr, npm   | JetStream fast-ingest batch publish           |
-| `messagepipeline/` | `@synadiaorbit/messagepipeline` | jsr, npm   | Middleware transformations for NATS messages  |
-| `muxsub/`          | `@synadiaorbit/muxsub`          | jsr, npm   | Multiplexing subscription                     |
-| `nhgc/`            | `@synadiaorbit/nhgc`            | jsr        | Client for the NATS HTTP Gateway (standalone) |
+`modules.json` is the list of modules, with a title, a description and a status
+(`stable` or `incubating`). The module table in `README.md` is generated from
+it: run `deno run -A bin/readme.ts` after changing it or adding a module. CI
+fails when `README.md` is out of date, or when a module directory isn't in
+`modules.json`.
+
+A module's package is `@synadiaorbit/<directory>` (the `name` in its
+`deno.json`). Every module is on JSR; a module with a `package.json` is also on
+npm, which is all of them except `nhgc`.
 
 ### Module layout
 
