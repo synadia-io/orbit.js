@@ -21,7 +21,7 @@ is a prerelease: npm publishes it under the `next` tag instead of `latest`.
 ## 2. Preview the release notes
 
 ```bash
-deno run --allow-run bin/release-notes.ts counters
+deno run --allow-run=git,gh bin/release-notes.ts counters
 ```
 
 This prints the pull requests that changed `counters/` since its last release,
@@ -43,7 +43,7 @@ version already on a registry is skipped, so a failed release can be rerun.
 ## 4. Create the GitHub release
 
 ```bash
-deno run --allow-run bin/release-notes.ts counters --to counters/v1.1.0 > /tmp/notes.md
+deno run --allow-run=git,gh bin/release-notes.ts counters --to counters/v1.1.0 > /tmp/notes.md
 gh release create counters/v1.1.0 --title "counters 1.1.0" --notes-file /tmp/notes.md
 ```
 
@@ -57,7 +57,7 @@ author and link, and a link to the full diff. Run it from the repository root;
 it needs `git` and an authenticated `gh`.
 
 ```bash
-deno run --allow-run bin/release-notes.ts <module> [--to <ref>] [--from <ref>]
+deno run --allow-run=git,gh bin/release-notes.ts <module> [--to <ref>] [--from <ref>]
 ```
 
 | option   | default                        | meaning                |

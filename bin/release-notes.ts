@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-run
+#!/usr/bin/env -S deno run --allow-run=git,gh
 /*
  * Copyright 2026 Synadia Communications, Inc
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 // requests that changed files under <module>/ since the module's previous
 // release tag, in the format of github's generated notes.
 //
-//   deno run --allow-run bin/release-notes.ts <module> [--to <ref>] [--from <ref>]
+//   deno run --allow-run=git,gh bin/release-notes.ts <module> [--to <ref>] [--from <ref>]
 //
 // --to defaults to HEAD. --from defaults to the newest <module>/v* tag that is
 // an ancestor of --to (other than --to itself); prerelease tags are skipped
@@ -66,6 +66,11 @@ try {
 }
 
 if (!from) {
+  // git describe takes --match and --exclude as glob patterns, so a module or
+  // ref with glob characters would select the wrong tags instead of failing
+  if (/[*?[\]]/.test(module) || /[*?[\]]/.test(to)) {
+    usage("the module and --to can't contain glob characters (*, ?, [, ])");
+  }
   // the nearest tag in history, git's version sort puts 1.0.0-1 after 1.0.0
   const describe = [
     "describe",
