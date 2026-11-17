@@ -13,9 +13,63 @@
  * limitations under the License.
  */
 
+/**
+ * A client for the NATS HTTP Gateway, part of Synadia Cloud: KV and messaging
+ * over HTTP, with no NATS connection.
+ *
+ * {@link newNHG} takes the gateway URL and an API key. Requests are made with
+ * `fetch`, and subscriptions and KV watches are server-sent events
+ * (`EventSource`), so the client runs anywhere both are available: browsers
+ * and Deno. Node.js 22 and later has an experimental `EventSource` behind the
+ * `--experimental-eventsource` flag; without the flag, on older versions, or
+ * on Bun, install an `EventSource` polyfill.
+ *
+ * @example
+ * ```ts
+ * import { newNHG } from "@synadiaorbit/nhgc";
+ *
+ * const nhg = newNHG({ url: "https://<gateway>", apiKey: "<api key>" });
+ *
+ * // key-value
+ * const kv = await nhg.kvm.add("profiles");
+ * await kv.put("alice", "Paris");
+ * const e = await kv.get("alice");
+ * console.log(e?.string()); // Paris
+ *
+ * // messaging
+ * await nhg.nats.publish("greetings", "hello");
+ * ```
+ *
+ * @module
+ */
+
 import type { Kvm, Nats } from "./types.ts";
 import { KvmImpl } from "./kvm.ts";
 import { NatsImpl } from "./nats.ts";
+
+export type {
+  HeartbeatOpts,
+  Kv,
+  KvBucketConfig,
+  KvBucketInfo,
+  KvChangeEvent,
+  KvEntry,
+  KvEntryInfo,
+  KvInclude,
+  Kvm,
+  KvOperation,
+  KvWatchFn,
+  KvWatchOpts,
+  Msg,
+  MsgCallback,
+  Nats,
+  ReviverFn,
+  Sub,
+  SubOpts,
+  Value,
+  Watcher,
+  WatchOpts,
+} from "./types.ts";
 
 /**
  * Interface to the API of the NHG
