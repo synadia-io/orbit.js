@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-import "./connect.ts";
-
 import { jetstreamManager } from "@nats-io/jetstream";
 import { type FastIngestOptions, startFastIngest } from "../src/mod.ts";
 import { assertEquals, assertExists } from "@std/assert";
-import { jetstreamServerConf, notCompatible, setup } from "@nats-io/nst";
+import { notCompatible } from "@nats-io/nst";
+import { setup } from "./server.ts";
 
 Deno.test("fastingest - exports", () => {
   assertEquals(typeof startFastIngest, "function");
@@ -27,7 +26,7 @@ Deno.test("fastingest - exports", () => {
 });
 
 Deno.test("fastingest - basics", async () => {
-  await using ctx = await setup(jetstreamServerConf({}));
+  await using ctx = await setup(true);
   const { ns, nc } = ctx;
   if (await notCompatible(ns, nc, "2.14.0")) {
     return;

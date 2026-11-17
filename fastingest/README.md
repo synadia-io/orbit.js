@@ -73,7 +73,7 @@ high-throughput producers, and calls out two concrete shapes:
 - **Object Store writes**, where every chunk must land or the file is corrupt —
   use `allowGaps: false` so the server aborts on any gap and the caller can
   restart from the gap sequence. `@nats-io/obj` has an undocumented
-  `allowBatched: true` opt-in on `os.create()`/`os.open()` that routes chunk
+  `allowBatched: true` opt-in on `Objm`'s `create()`/`open()` that routes chunk
   writes through fast-ingest with no other code changes — a quick way to try it
   on a real workload.
 - **Fast metric publishers**, where occasional drops are acceptable — use
@@ -104,18 +104,19 @@ await jsm.streams.add({
 
 `startFastIngest` rejects against a non-batched stream.
 
-## Install
+## Installation
 
 ```bash
+# node, bun (esm and commonjs)
 npm install @synadiaorbit/fastingest
-```
 
-```bash
+# deno
 deno add jsr:@synadiaorbit/fastingest
 ```
 
-Peer requirement: `@nats-io/jetstream` and `@nats-io/nats-core` at `3.4.x` or
-later.
+The npm package works with `import` and `require`, and requires Node.js 22 or
+later. It is built for nats.js 3.5 (`@nats-io/nats-core` and
+`@nats-io/jetstream`).
 
 ## API
 
@@ -125,13 +126,14 @@ later.
 function startFastIngest(
   nc: NatsConnection,
   subj: string, // first message subject
-  payload?: Payload, // first message payload
+  payload: Payload | undefined, // first message payload
   opts: {
     allowGaps: boolean;
     ackInterval?: number;
     maxOutstandingAcks?: number;
     inboxPrefix?: string;
   } & Partial<JetStreamPublishOptions>,
+  defaultTimeout?: number, // ms to wait for acks, default 5000
 ): Promise<FastIngest>;
 ```
 
@@ -201,60 +203,98 @@ type FastIngest = {
 
 ## Usage
 
-The example below assumes you already have a `NatsConnection`. Pick whichever
-transport fits your runtime — `@nats-io/transport-node`,
-`@nats-io/transport-deno`, or `wsconnect` from `@nats-io/nats-core` for
-browsers.
+The examples connect to the shared `demo.nats.io` server with `wsconnect`, which
+works in every runtime; any nats.js transport works too, see
+[runtimes](https://github.com/nats-io/nats.js/blob/main/runtimes.md). Each one
+creates a stream of its own and deletes it when it is done: messages expire with
+the stream's `max_age`, but the stream itself stays until it is deleted.
 
 ```ts
-import type { NatsConnection } from "@nats-io/nats-core";
+import { nanos, nuid, wsconnect } from "@nats-io/nats-core";
 import { jetstreamManager } from "@nats-io/jetstream";
 import { startFastIngest } from "@synadiaorbit/fastingest";
 
-declare const nc: NatsConnection;
-
+const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
 const jsm = await jetstreamManager(nc);
+
+// a stream of its own on the shared demo server; max_age expires the
+// messages, and the finally block deletes the stream
+const stream = `orders_${nuid.next()}`;
 await jsm.streams.add({
-  name: "orders",
-  subjects: ["orders.>"],
+  name: stream,
+  subjects: [`${stream}.>`],
   allow_batched: true,
+  max_age: nanos(2 * 60 * 1000),
 });
 
-declare const orders: string[]; // serialized order events to replay
+try {
+  // serialized order events to replay
+  const orders = Array.from(
+    { length: 1000 },
+    (_, i) => JSON.stringify({ id: i }),
+  );
 
-const fi = await startFastIngest(nc, "orders.created", orders[0], {
-  allowGaps: false,
-  ackInterval: 100,
-});
+  const fi = await startFastIngest(nc, `${stream}.created`, orders[0], {
+    allowGaps: false,
+    ackInterval: 100,
+  });
 
-for (let i = 1; i < orders.length - 1; i++) {
-  await fi.add("orders.created", orders[i]);
+  for (let i = 1; i < orders.length - 1; i++) {
+    await fi.add(`${stream}.created`, orders[i]);
+  }
+
+  // terminate with a final message — use `fi.end()` to commit without one
+  const ack = await fi.last(`${stream}.created`, orders[orders.length - 1]);
+  console.log(`stored ${ack.count} messages, last seq ${ack.seq}`);
+} finally {
+  await jsm.streams.delete(stream);
+  await nc.close();
 }
-
-// terminate with a final message — use `fi.end()` to commit without one
-const ack = await fi.last("orders.created", orders[orders.length - 1]);
-console.log(`stored ${ack.count} messages, last seq ${ack.seq}`);
 ```
 
 ### Handling gaps
 
 ```ts
-declare const samples: string[]; // sampled metric lines
+import { nanos, nuid, wsconnect } from "@nats-io/nats-core";
+import { jetstreamManager } from "@nats-io/jetstream";
+import { startFastIngest } from "@synadiaorbit/fastingest";
 
-const fi = await startFastIngest(nc, "metrics.cpu", samples[0], {
-  allowGaps: true,
+const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+const jsm = await jetstreamManager(nc);
+
+// a stream of its own on the shared demo server; max_age expires the
+// messages, and the finally block deletes the stream
+const stream = `metrics_${nuid.next()}`;
+await jsm.streams.add({
+  name: stream,
+  subjects: [`${stream}.>`],
+  allow_batched: true,
+  max_age: nanos(2 * 60 * 1000),
 });
 
-(async () => {
-  for await (const g of fi.gaps()) {
-    console.warn(`lost samples between batchSeq ${g.lastSeq} and ${g.seq}`);
-  }
-})();
+try {
+  // sampled metric lines
+  const samples = Array.from({ length: 1000 }, (_, i) => `cpu ${i % 100}`);
 
-for (let i = 1; i < samples.length; i++) {
-  await fi.add("metrics.cpu", samples[i]);
+  const fi = await startFastIngest(nc, `${stream}.cpu`, samples[0], {
+    allowGaps: true,
+  });
+
+  (async () => {
+    for await (const g of fi.gaps()) {
+      console.warn(`lost samples between batchSeq ${g.lastSeq} and ${g.seq}`);
+    }
+  })();
+
+  for (let i = 1; i < samples.length; i++) {
+    await fi.add(`${stream}.cpu`, samples[i]);
+  }
+  const ack = await fi.end();
+  console.log(`stored ${ack.count} samples`);
+} finally {
+  await jsm.streams.delete(stream);
+  await nc.close();
 }
-await fi.end();
 ```
 
 ### Keep-alive on slow producers
