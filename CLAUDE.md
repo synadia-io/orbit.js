@@ -84,5 +84,6 @@ npm, then publishes to both. Versions with a qualifier (`1.0.2-0`) go to the npm
 tag `next`. npm publishes with trusted publishing, so no token is involved. A
 version already on a registry is skipped, so a failed release can be rerun.
 
-To release, bump `version` in the module's `deno.json` and `package.json` (and
-`npm install` to refresh `package-lock.json`), merge, then push the tag.
+The steps, and `bin/release-notes.ts`, which writes a module's GitHub release
+notes from the pull requests that changed its directory, are in
+[RELEASING.md](RELEASING.md).
