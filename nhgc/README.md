@@ -53,7 +53,7 @@ token.
 import { newNHG } from "@synadiaorbit/nhgc";
 
 // create an instance of the API using the specified connection details
-const nhg = newNHG("https://someurl.com", "someapikey");
+const nhg = newNHG({ url: "https://someurl.com", apiKey: "someapikey" });
 ```
 
 The NHG client exposes:

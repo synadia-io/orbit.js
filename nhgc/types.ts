@@ -308,6 +308,9 @@ export type KvWatchOpts = WatchOpts & {
   callback: KvWatchFn;
 };
 
+/**
+ * Heartbeat option for subscriptions and watches.
+ */
 export type HeartbeatOpts = {
   /**
    * Send a heartbeat if no values are notified within the specified time.
@@ -317,6 +320,9 @@ export type HeartbeatOpts = {
   idleHeartbeat?: number;
 };
 
+/**
+ * Options for {@link Nats.subscribe}.
+ */
 export type SubOpts = {
   /**
    * NATS queue group to place the subscription under
@@ -324,6 +330,9 @@ export type SubOpts = {
   queue: string;
 } & HeartbeatOpts;
 
+/**
+ * Options for watching a Kv.
+ */
 export type WatchOpts = HeartbeatOpts & {
   /**
    * Values to include in the updates
@@ -371,22 +380,57 @@ export interface Kvm {
   info(bucket: string): Promise<KvBucketInfo>;
 }
 
+/**
+ * A message received from a subscription or as a reply to a request.
+ */
 export interface Msg {
+  /**
+   * The message's headers.
+   */
   headers: Headers;
+  /**
+   * The subject the message was published to.
+   */
   subject: string;
+  /**
+   * The subject to reply to, if the sender expects a reply.
+   */
   reply?: string;
+  /**
+   * The message's payload.
+   */
   data?: Uint8Array;
 
+  /**
+   * Returns the payload decoded as a UTF-8 string.
+   */
   string(): string;
+  /**
+   * Returns the payload parsed as JSON.
+   * @param r - an optional reviver, as for `JSON.parse()`
+   */
   json<T>(r?: ReviverFn): T;
 }
 
+/**
+ * Called for each message of a subscription, or with an error if the
+ * subscription fails.
+ */
 export type MsgCallback = (err?: Error, msg?: Msg) => void;
 
+/**
+ * A subscription created by {@link Nats.subscribe}.
+ */
 export interface Sub {
+  /**
+   * Stops the subscription.
+   */
   unsubscribe(): void;
 }
 
+/**
+ * Core NATS messaging through the gateway: publish, request and subscribe.
+ */
 export interface Nats {
   /**
    * Publishes the specified data to the specified subject.
