@@ -38,6 +38,8 @@
  * // a handler as an async iterator
  * const replies = mux.newMuxInbox("replies");
  *
+ * // publishing doesn't wait for delivery: each handler gets its message as
+ * // it arrives, independently of the other
  * nc.publish(mux.subjectFor("orders"), "order 1");
  * nc.publish(mux.subjectFor("replies"), "reply 1");
  *
@@ -45,6 +47,8 @@
  *   console.log("reply:", m.string());
  *   break;
  * }
+ * // drain delivers any messages still pending, such as the order, then
+ * // closes the subscription
  * await mux.drain();
  * await nc.close();
  * ```
