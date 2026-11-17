@@ -26,15 +26,6 @@ import { getConnectionDetails, randomKvName } from "./credentials.ts";
 import type { KvChangeEvent } from "./types.ts";
 import { deferred } from "./util.ts";
 
-Deno.test("kv - cleanup test buckets", async () => {
-  const nhg = newNHG(getConnectionDetails());
-  const kvs = await nhg.kvm.list();
-  for (const n of kvs) {
-    if (n.startsWith("TESTKV_")) {
-      await nhg.kvm.destroy(n);
-    }
-  }
-});
 Deno.test("kv - get simple value", async () => {
   const nhg = newNHG(getConnectionDetails());
   const id = randomKvName();
