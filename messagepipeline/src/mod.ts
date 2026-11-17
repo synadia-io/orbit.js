@@ -13,6 +13,55 @@
  * limitations under the License.
  */
 
+/**
+ * Middleware for NATS messages: compose functions that validate, reformat or
+ * annotate a message into a {@link Pipeline}, and run every message a handler
+ * receives through it.
+ *
+ * Messages in nats.js are immutable, so a pipeline function returns a new
+ * message. {@link MutableMsg.fromMsg} copies a received message, keeping its
+ * subject, reply, headers and data, into one whose fields can be set, and
+ * which can still be responded to. If a function throws, the pipeline stops
+ * and {@link Pipeline.transform} rejects with that error.
+ *
+ * @example
+ * ```ts
+ * import { type Msg, wsconnect } from "@nats-io/nats-core";
+ * import { MutableMsg, Pipeline } from "@synadiaorbit/messagepipeline";
+ *
+ * // rejects empty requests
+ * function valid(m: Msg): Msg {
+ *   if (m.data.length === 0) {
+ *     throw new Error("message is empty");
+ *   }
+ *   return m;
+ * }
+ *
+ * // reverses the text of the message
+ * function reverse(m: Msg): Msg {
+ *   const mm = MutableMsg.fromMsg(m);
+ *   mm.data = new TextEncoder().encode(m.string().split("").reverse().join(""));
+ *   return mm;
+ * }
+ *
+ * const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+ * const pipeline = new Pipeline(valid, reverse);
+ * nc.subscribe("reverse", {
+ *   callback: (_, m) => {
+ *     pipeline.transform(m)
+ *       .then((r) => nc.respondMessage(r))
+ *       .catch((err) => m.respond(err.message));
+ *   },
+ * });
+ *
+ * const r = await nc.request("reverse", "hello");
+ * console.log(r.string()); // olleh
+ * await nc.close();
+ * ```
+ *
+ * @module
+ */
+
 import { headers } from "@nats-io/nats-core";
 
 import type {
