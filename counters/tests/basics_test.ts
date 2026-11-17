@@ -196,3 +196,66 @@ Deno.test("counter - value only for the named counter", async () => {
   assertEquals(await c.value("seqs.*"), null);
   assertEquals(await c.value("seqs.a"), 1n);
 });
+
+Deno.test("counter - sources", async () => {
+  await using ctx = await setup(true);
+  const { nc } = ctx;
+
+  const jsm = await jetstreamManager(nc);
+  await jsm.streams.add({
+    name: "es",
+    subjects: ["es.>"],
+    allow_msg_counter: true,
+    allow_direct: true,
+  });
+  await jsm.streams.add({
+    name: "fr",
+    subjects: ["fr.>"],
+    allow_msg_counter: true,
+    allow_direct: true,
+  });
+  // the aggregate sums both regions into eu.hits
+  await jsm.streams.add({
+    name: "eu",
+    subjects: ["eu.>"],
+    allow_msg_counter: true,
+    allow_direct: true,
+    sources: [
+      { name: "es", subject_transforms: [{ src: "es.>", dest: "eu.>" }] },
+      { name: "fr", subject_transforms: [{ src: "fr.>", dest: "eu.>" }] },
+    ],
+  });
+
+  const es = NewCounter(nc, "es");
+  const fr = NewCounter(nc, "fr");
+  await es.increment("es.hits", 10);
+  await fr.increment("fr.hits", 5);
+  await es.increment("es.hits", 1);
+
+  // a counter that isn't sourced has no sources
+  const local = await es.getCounter("es.hits");
+  assertExists(local);
+  assertEquals(local.sources, {});
+
+  const eu = NewCounter(nc, "eu");
+  let agg: Counter | null = null;
+  for (let i = 0; i < 50; i++) {
+    agg = await eu.getCounter("eu.hits");
+    if (agg?.value === 16n) break;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  assertExists(agg);
+  assertEquals(agg.value, 16n);
+  // keyed by source stream, then by the subject before the transform
+  assertEquals(agg.sources, {
+    es: { "es.hits": 11n },
+    fr: { "fr.hits": 5n },
+  });
+
+  // the batch api returns them too
+  const iter = await eu.getCounters("eu.hits");
+  for await (const c of iter) {
+    assertEquals(c.sources, agg.sources);
+  }
+  assertEquals(iter.getProcessed(), 1);
+});

@@ -97,6 +97,13 @@ export type CounterValue = PubAck & {
 };
 
 /**
+ * The last value the server saw from each source of an aggregated counter,
+ * keyed by source stream name and then by the counter's subject in that
+ * source (before any subject transform).
+ */
+export type CounterSources = Record<string, Record<string, bigint>>;
+
+/**
  * A JetStream Counter
  */
 export class Counter {
@@ -119,6 +126,28 @@ export class Counter {
   get delta(): bigint {
     const v = this.m.headers?.get("Nats-Incr");
     return typeof v === "string" ? BigInt(v) : BigInt(0);
+  }
+
+  /**
+   * Return the contributions of each source for a counter that aggregates
+   * other counters through stream sources (ADR-49). The server keeps the
+   * last value seen from each source in the Nats-Counter-Sources header.
+   * Empty for a counter that isn't sourced.
+   */
+  get sources(): CounterSources {
+    const h = this.m.headers?.get("Nats-Counter-Sources");
+    if (!h) {
+      return {};
+    }
+    const raw = JSON.parse(h) as Record<string, Record<string, string>>;
+    const sources: CounterSources = {};
+    for (const [stream, subjects] of Object.entries(raw)) {
+      sources[stream] = {};
+      for (const [subject, v] of Object.entries(subjects)) {
+        sources[stream][subject] = BigInt(v);
+      }
+    }
+    return sources;
   }
 
   /**
