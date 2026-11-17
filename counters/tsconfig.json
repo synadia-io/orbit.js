@@ -6,11 +6,11 @@
     "moduleResolution": "nodenext",
     "sourceMap": true,
     "declaration": true,
-    "allowJs": true,
     "removeComments": false,
-    "resolveJsonModule": true
+    "rootDir": "./src",
+    "rewriteRelativeImportExtensions": true
   },
   "include": [
-    "./build/src/**/*"
+    "./src/**/*"
   ]
 }

@@ -8,25 +8,25 @@
 
 JetStream Counters
 
-JetStream 2.12 introduced a new counter feature that enables efficient counter
-CRDT (Conflict-free Replicated Data Type) operations that are order independent.
-A stream is set up for counters by enabling its `allow_msg_counter` and
-`allow_direct` options. Counter streams can only be used for counter operations,
-but can be aggregated and distributed across clusters and super-clusters.
+NATS server 2.12 introduced a JetStream counter feature that enables efficient
+counter CRDT (Conflict-free Replicated Data Type) operations that are order
+independent. A stream is set up for counters by enabling its `allow_msg_counter`
+and `allow_direct` options. Counter streams can only be used for counter
+operations, but can be aggregated and distributed across clusters and
+super-clusters.
 
 ## Installation
 
-### Deno/Web Browser
-
-```typescript
-import { NewCounter } from "jsr:@synadiaorbit/counters";
-```
-
-### Node.js
-
 ```bash
+# node, bun (esm and commonjs)
 npm install @synadiaorbit/counters
+
+# deno
+deno add jsr:@synadiaorbit/counters
 ```
+
+The npm package works with `import` and `require`, and requires Node.js 22 or
+later.
 
 ```typescript
 import { NewCounter } from "@synadiaorbit/counters";
@@ -34,15 +34,17 @@ import { NewCounter } from "@synadiaorbit/counters";
 
 ## Usage
 
+The examples connect to the shared `demo.nats.io` server with `wsconnect`, which
+works in every runtime; any nats.js transport works too, see
+[runtimes](https://github.com/nats-io/nats.js/blob/main/runtimes.md). Each one
+creates a stream of its own and deletes it when it is done.
+
 ### Stream Setup
 
-First, create a JetStream stream with the required configuration:
+Counters need a stream with `allow_msg_counter` and `allow_direct` enabled; both
+options are required:
 
 ```typescript
-import { jetstreamManager } from "@nats-io/jetstream";
-
-const jsm = await jetstreamManager(nc);
-
 await jsm.streams.add({
   name: "counters",
   subjects: ["counters.>"],
@@ -51,74 +53,150 @@ await jsm.streams.add({
 });
 ```
 
-Note the `allow_msg_counter` and `allow_direct` both these options are required.
-Note that counter streams reserve the payload of a message to maintain the
-counter values, so only counter operations are allowed on the stream.
+Counter streams reserve the payload of a message to maintain the counter values,
+so only counter operations are allowed on the stream. Messages expire with the
+stream's `max_age`, but the stream itself stays until it is deleted.
 
 ### Basic Counter Operations
 
 ```typescript
-import { connect } from "@nats-io/nats-core";
+import { nanos, nuid, wsconnect } from "@nats-io/nats-core";
+import { jetstreamManager } from "@nats-io/jetstream";
 import { NewCounter } from "@synadiaorbit/counters";
 
-// Get a connection to the NATS server
-const nc = await connect({ servers: "nats://localhost:4222" });
+const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+const jsm = await jetstreamManager(nc);
 
-// Create a counter instance for the stream
-const counters = NewCounter(nc, "counters");
+// a stream of its own on the shared demo server; max_age expires the
+// messages, and the finally block deletes the stream
+const stream = `counters_${nuid.next()}`;
+await jsm.streams.add({
+  name: stream,
+  subjects: [`${stream}.>`],
+  allow_msg_counter: true,
+  allow_direct: true,
+  max_age: nanos(2 * 60 * 1000),
+});
 
-// Increment a counter
-const newValue = await counters.increment("counters.user_logins", 1);
-console.log(`counter value: ${newValue}`);
+try {
+  const counters = NewCounter(nc, stream);
+  const logins = `${stream}.user_logins`;
 
-await counters.increment("counters.user_logins", 100);
+  // Increment a counter
+  const newValue = await counters.increment(logins, 1);
+  console.log(`counter value: ${newValue}`);
 
-// Get current counter value
-const currentValue = await counters.value("counters.user_logins");
-console.log(`current value: ${currentValue}`);
+  await counters.increment(logins, 100);
 
-// Get counter with metadata
-const counter = await counters.getCounter("counters.user_logins");
-if (counter) {
-  console.log(`Value: ${counter.value}`);
-  console.log(`Delta: ${counter.delta}`);
-  console.log(`Subject: ${counter.subject}`);
-  console.log(`Sequence: ${counter.seq}`);
-  console.log(`Timestamp: ${counter.timestamp}`);
-  console.log(`Time: ${counter.time}`);
+  // Get current counter value
+  const currentValue = await counters.value(logins);
+  console.log(`current value: ${currentValue}`);
+
+  // Get counter with metadata
+  const counter = await counters.getCounter(logins);
+  if (counter) {
+    console.log(`Value: ${counter.value}`);
+    console.log(`Delta: ${counter.delta}`);
+    console.log(`Subject: ${counter.subject}`);
+    console.log(`Sequence: ${counter.seq}`);
+    console.log(`Timestamp: ${counter.timestamp}`);
+    console.log(`Time: ${counter.time}`);
+  }
+} finally {
+  await jsm.streams.delete(stream);
+  await nc.close();
 }
 ```
 
 ### Batch Operations
 
 ```typescript
-// Get multiple counter values using wildcards
-const vals = await counters.values("counters.*");
-for await (const value of vals) {
-  console.log(`Counter value: ${value}`);
-}
+import { nanos, nuid, wsconnect } from "@nats-io/nats-core";
+import { jetstreamManager } from "@nats-io/jetstream";
+import { NewCounter } from "@synadiaorbit/counters";
 
-// Get multiple counters with metadata
-const counterObjects = await counters.getCounters([
-  "counters.logins",
-  "counters.errors",
-]);
-for await (const counter of counterObjects) {
-  console.log(`${counter.subject}: ${counter.value} (seq: ${counter.seq})`);
+const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+const jsm = await jetstreamManager(nc);
+
+// a stream of its own on the shared demo server; max_age expires the
+// messages, and the finally block deletes the stream
+const stream = `counters_${nuid.next()}`;
+await jsm.streams.add({
+  name: stream,
+  subjects: [`${stream}.>`],
+  allow_msg_counter: true,
+  allow_direct: true,
+  max_age: nanos(2 * 60 * 1000),
+});
+
+try {
+  const counters = NewCounter(nc, stream);
+  await counters.increment(`${stream}.logins`, 10);
+  await counters.increment(`${stream}.errors`, 2);
+
+  // Get multiple counter values using wildcards
+  const vals = await counters.values(`${stream}.*`);
+  for await (const value of vals) {
+    console.log(`Counter value: ${value}`);
+  }
+
+  // Get multiple counters with metadata
+  const counterObjects = await counters.getCounters([
+    `${stream}.logins`,
+    `${stream}.errors`,
+    `${stream}.missing`,
+  ]);
+  for await (const counter of counterObjects) {
+    console.log(`${counter.subject}: ${counter.value} (seq: ${counter.seq})`);
+  }
+} finally {
+  await jsm.streams.delete(stream);
+  await nc.close();
 }
 ```
+
+Counters that don't exist are skipped. If none of the names match a counter,
+iterating rejects with a `no results` error.
 
 ### Historical Values
 
 ```typescript
-// Get a counter value at a specific sequence number
-const historicalValue = await counters.value("counters.user_logins", 5);
-console.log(`Value at sequence 5: ${historicalValue}`);
+import { nanos, nuid, wsconnect } from "@nats-io/nats-core";
+import { jetstreamManager } from "@nats-io/jetstream";
+import { NewCounter } from "@synadiaorbit/counters";
 
-// Get counter with metadata at a specific sequence
-const historicalCounter = await counters.getCounter("counters.user_logins", 5);
-if (historicalCounter) {
-  console.log(`Historical delta: ${historicalCounter.delta}`);
+const nc = await wsconnect({ servers: "wss://demo.nats.io:8443" });
+const jsm = await jetstreamManager(nc);
+
+// a stream of its own on the shared demo server; max_age expires the
+// messages, and the finally block deletes the stream
+const stream = `counters_${nuid.next()}`;
+await jsm.streams.add({
+  name: stream,
+  subjects: [`${stream}.>`],
+  allow_msg_counter: true,
+  allow_direct: true,
+  max_age: nanos(2 * 60 * 1000),
+});
+
+try {
+  const counters = NewCounter(nc, stream);
+  const logins = `${stream}.user_logins`;
+  await counters.increment(logins, 1); // stored at sequence 1
+  await counters.increment(logins, 100);
+
+  // Get a counter value at a specific sequence number
+  const historicalValue = await counters.value(logins, 1);
+  console.log(`Value at sequence 1: ${historicalValue}`);
+
+  // Get counter with metadata at a specific sequence
+  const historicalCounter = await counters.getCounter(logins, 1);
+  if (historicalCounter) {
+    console.log(`Historical delta: ${historicalCounter.delta}`);
+  }
+} finally {
+  await jsm.streams.delete(stream);
+  await nc.close();
 }
 ```
 

@@ -13,19 +13,16 @@
  * limitations under the License.
  */
 
-import { wsconnect } from "@nats-io/nats-core";
 import { jetstreamManager } from "@nats-io/jetstream";
 import { type Counter, NewCounter } from "../src/mod.ts";
 import { assertArrayIncludes, assertEquals, assertExists } from "@std/assert";
-
-const url = "wss://demo.nats.io:8443";
+import { setup } from "./server.ts";
 
 Deno.test("counter - basics", async () => {
-  const nc = await wsconnect({ servers: url });
+  await using ctx = await setup(true);
+  const { nc } = ctx;
 
   const jsm = await jetstreamManager(nc);
-  await jsm.streams.delete("counters").catch(() => {});
-
   await jsm.streams.add({
     name: "counters",
     subjects: ["counters.>"],
@@ -78,16 +75,13 @@ Deno.test("counter - basics", async () => {
   assertEquals(iter.getProcessed(), 2);
   assertEquals(buf.length, 2);
   assertArrayIncludes(buf, [101n, 0n]);
-
-  await nc.close();
 });
 
 Deno.test("counter - multiple", async () => {
-  const nc = await wsconnect({ servers: url });
+  await using ctx = await setup(true);
+  const { nc } = ctx;
 
   const jsm = await jetstreamManager(nc);
-  await jsm.streams.delete("many").catch(() => {});
-
   await jsm.streams.add({
     name: "many",
     subjects: ["many.>"],
@@ -119,6 +113,4 @@ Deno.test("counter - multiple", async () => {
 
   const c1000 = buf.find((v) => v.subject === "many.1000");
   assertEquals(c1000, undefined);
-
-  await nc.close();
 });
